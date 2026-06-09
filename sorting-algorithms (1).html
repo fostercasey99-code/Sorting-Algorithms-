@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorting Algorithms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0e11;--bg2:#13151a;--bg3:#1c1f27;
+  --border:rgba(255,255,255,.07);--border-hi:rgba(255,255,255,.14);
+  --text:#e8e6df;--text2:#888785;--text3:#454340;
+  --blue:#4f8ef7;--teal:#3ec9a0;--amber:#f0a030;
+  --coral:#f06050;--purple:#9f7ef7;--green:#5ec460;
+  --font-head:'Syne',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'DM Mono',monospace;
+  --r:12px;--r-sm:7px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);min-height:100vh}
+.hdr{padding:24px 40px 18px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:14px}
+.hdr h1{font-family:var(--font-head);font-size:20px;font-weight:800;letter-spacing:-.01em}
+.layout{display:flex;min-height:calc(100vh - 63px);max-width:1400px;margin:0 auto;width:100%}
+.sidebar{width:240px;flex-shrink:0;border-right:1px solid var(--border);padding:20px 0;position:sticky;top:0;height:calc(100vh - 63px);overflow-y:auto}
+.sidebar-lbl{font-family:var(--font-mono);font-size:10px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:0 24px 10px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 24px;cursor:pointer;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:all .15s;user-select:none;font-family:var(--font-head);font-weight:500}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.nav-item.active{color:var(--text);border-left-color:var(--blue);background:rgba(79,142,247,.06)}
+.main{flex:1;padding:36px 44px;min-width:0}
+.panel{display:none}.panel.active{display:block}
+.ph{margin-bottom:24px}
+.ph-row{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.ph-title{font-family:var(--font-head);font-size:26px;font-weight:800}
+.ph-badge{font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--border-hi);color:var(--text2)}
+.ph-desc{font-size:14px;color:var(--text2);line-height:1.75;max-width:680px}
+.ctrls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.clbl{font-family:var(--font-mono);font-size:11px;color:var(--text3)}
+.ci{font-size:13px;font-family:var(--font-mono);padding:6px 9px;border:1px solid var(--border-hi);border-radius:var(--r-sm);background:var(--bg3);color:var(--text);outline:none;width:60px}
+.ci:focus{border-color:var(--blue)}
+.cb{font-size:12px;font-family:var(--font-head);font-weight:600;padding:6px 15px;border:1px solid var(--border-hi);border-radius:var(--r-sm);background:var(--bg3);color:var(--text);cursor:pointer;transition:all .15s;user-select:none}
+.cb:hover{background:rgba(255,255,255,.07)}.cb:active{transform:scale(.97)}
+.cb.p{background:rgba(79,142,247,.14);border-color:rgba(79,142,247,.35);color:#a8c8ff}
+.cb.p:hover{background:rgba(79,142,247,.24)}
+.cb.go{background:rgba(62,201,160,.14);border-color:rgba(62,201,160,.35);color:#7de8c8}
+.cb.go:hover{background:rgba(62,201,160,.24)}
+.cb:disabled{opacity:.35;cursor:default;transform:none}
+.csep{width:1px;height:22px;background:var(--border);margin:0 2px}
+.scene{border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);overflow:hidden;margin-bottom:12px;position:relative}
+canvas{display:block}
+.log{font-family:var(--font-mono);font-size:12px;color:var(--text3);padding:7px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);min-height:22px;transition:color .2s;margin-bottom:12px}
+.log.hi{color:var(--amber)}
+.callout{font-size:13px;color:var(--text2);background:rgba(79,142,247,.05);border:1px solid rgba(79,142,247,.14);border-left:3px solid var(--blue);border-radius:var(--r-sm);padding:10px 14px;margin-top:14px;line-height:1.65}
+.callout strong{color:var(--text);font-weight:600}
+/* complexity table */
+.complexity-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:12px;margin-top:14px}
+.complexity-table th{text-align:left;padding:7px 12px;color:var(--text2);font-weight:500;border-bottom:1px solid var(--border)}
+.complexity-table td{padding:7px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+.complexity-table td.good{color:#7de8c8}.complexity-table td.bad{color:#ff9a90}.complexity-table td.ok{color:#ffc860}
+/* pseudocode */
+.pseudo{font-family:var(--font-mono);font-size:12px;line-height:1.9;padding:14px 18px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);margin-top:14px;overflow-x:auto}
+.pseudo .kw{color:#c4adff}.pseudo .fn{color:#7de8c8}.pseudo .cmt{color:#454340;font-style:italic}
+.pseudo .line{display:block;padding:1px 0;transition:background .15s;border-radius:3px}
+.pseudo .line.hi{background:rgba(240,160,48,.2);color:#ffc860}
+/* step nav */
+.step-nav{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.step-nav button{font-size:12px;padding:5px 14px;border:1px solid var(--border-hi);border-radius:var(--r-sm);background:var(--bg3);color:var(--text);cursor:pointer;transition:all .15s}
+.step-nav button:hover{background:rgba(255,255,255,.07)}
+.step-nav button:disabled{opacity:.35;cursor:default}
+.dots{display:flex;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--border-hi)}
+.dot.on{background:var(--text2)}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <h1>Sorting Algorithms</h1>
+  <span style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">visualize · understand · compare</span>
+</header>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-lbl">Algorithms</div>
+    <div id="nav"></div>
+    
+  </nav>
+  <main class="main" id="panels"></main>
+</div>
+<script>
+const DPR=window.devicePixelRatio||1;
+function mkC(id,h){
+  const c=document.getElementById(id);if(!c)return null;
+  const W=c.parentElement.clientWidth;
+  c.width=Math.round(W*DPR);c.height=Math.round(h*DPR);
+  c.style.width=W+'px';c.style.height=h+'px';
+  const ctx=c.getContext('2d');ctx.setTransform(DPR,0,0,DPR,0,0);ctx.translate(.5,.5);
+  return{c,ctx,W,H:h};
+}
+function setLog(id,t,hi=false){const e=document.getElementById(id);if(!e)return;e.textContent=t;e.classList.toggle('hi',hi);}
+function lerp(a,b,t){return a+(b-a)*t;}
+function easeOut(t){return 1-Math.pow(1-t,3);}
+function updateDots(id,total,cur){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML='';
+  for(let i=0;i<total;i++){const d=document.createElement('div');d.className='dot'+(i===cur?' on':'');el.appendChild(d);}
+}
+
+/* ══════════════════════════════════════════
+   SELECTION SORT
+══════════════════════════════════════════ */
+let ssData=[], ssSteps=[], ssStepIdx=0, ssAnim=null, ssSpeed=600;
+const SS_COLORS={
+  default:'rgba(79,142,247,.7)',
+  comparing:'rgba(240,160,48,.9)',
+  minimum:'rgba(240,96,80,.9)',
+  sorted:'rgba(62,201,160,.7)',
+  swapping:'rgba(159,126,247,.9)',
+};
+
+function ssGenerate(){
+  const n=parseInt(document.getElementById('ss-size').value)||8;
+  ssData=Array.from({length:Math.min(Math.max(n,4),16)},()=>Math.floor(Math.random()*90)+10);
+  ssSteps=[];ssStepIdx=0;
+  ssBuildSteps([...ssData]);
+  drawBarsAnimated('ss-c',ssData,ssData,{sorted:[],comparing:[],minimum:-1,swapping:[]},{sorted:[],comparing:[],minimum:-1,swapping:[]},SS_COLORS,1);
+  setLog('ss-log','Array generated. Press Step or Auto to begin sorting.');
+  document.getElementById('ss-prev').disabled=true;
+  document.getElementById('ss-next').disabled=false;
+  updateDots('ss-dots',ssSteps.length,0);
+  highlightPseudo(-1);
+}
+
+function ssBuildSteps(arr){
+  const a=[...arr];
+  const n=a.length;
+  // Step 0: initial state
+  ssSteps.push({arr:[...a],sorted:[],comparing:[],minimum:-1,swapping:[],
+    msg:`Starting selection sort. Array has ${n} elements. We will do ${n-1} passes.`,
+    pseudoLine:-1});
+
+  for(let i=0;i<n-1;i++){
+    // Mark start of pass
+    ssSteps.push({arr:[...a],sorted:Array.from({length:i},(_,k)=>k),comparing:[],minimum:i,swapping:[],
+      msg:`Pass ${i+1}: finding the minimum in positions ${i} to ${n-1}. Starting at index ${i} (value ${a[i]}).`,
+      pseudoLine:1});
+
+    let minIdx=i;
+    for(let j=i+1;j<n;j++){
+      ssSteps.push({arr:[...a],sorted:Array.from({length:i},(_,k)=>k),comparing:[j],minimum:minIdx,swapping:[],
+        msg:`Comparing index ${j} (value ${a[j]}) with current minimum index ${minIdx} (value ${a[minIdx]}). ${a[j]<a[minIdx]?`${a[j]} < ${a[minIdx]} — new minimum found!`:`${a[j]} ≥ ${a[minIdx]} — keep current minimum.`}`,
+        pseudoLine:3});
+      if(a[j]<a[minIdx]){
+        minIdx=j;
+        ssSteps.push({arr:[...a],sorted:Array.from({length:i},(_,k)=>k),comparing:[],minimum:minIdx,swapping:[],
+          msg:`New minimum is index ${minIdx} (value ${a[minIdx]}).`,
+          pseudoLine:4});
+      }
+    }
+    if(minIdx!==i){
+      ssSteps.push({arr:[...a],sorted:Array.from({length:i},(_,k)=>k),comparing:[],minimum:minIdx,swapping:[i,minIdx],
+        msg:`Minimum found at index ${minIdx} (value ${a[minIdx]}). Swapping with index ${i} (value ${a[i]}).`,
+        pseudoLine:6});
+      [a[i],a[minIdx]]=[a[minIdx],a[i]];
+      ssSteps.push({arr:[...a],sorted:Array.from({length:i+1},(_,k)=>k),comparing:[],minimum:-1,swapping:[],
+        msg:`Swapped! Index ${i} now holds ${a[i]} — it's in its final sorted position.`,
+        pseudoLine:6});
+    } else {
+      ssSteps.push({arr:[...a],sorted:Array.from({length:i+1},(_,k)=>k),comparing:[],minimum:-1,swapping:[],
+        msg:`Index ${i} (value ${a[i]}) is already the minimum — no swap needed. It's in its final position.`,
+        pseudoLine:6});
+    }
+  }
+  ssSteps.push({arr:[...a],sorted:Array.from({length:n},(_,k)=>k),comparing:[],minimum:-1,swapping:[],
+    msg:`Done! Array is fully sorted. Selection sort made ${n-1} passes and performed comparisons for every element.`,
+    pseudoLine:7});
+}
+
+/* ── shared animated draw helper ── */
+let animReq=null;
+function drawBarsAnimated(canvasId,fromArr,toArr,fromState,toState,colors,dur,onDone){
+  if(animReq){cancelAnimationFrame(animReq);animReq=null;}
+  const s=mkC(canvasId,220);if(!s)return;
+  const{ctx,W,H}=s;
+  const n=toArr.length;
+  const pad=16,gap=6;
+  const bw=Math.floor((W-pad*2-(n-1)*gap)/n);
+  const maxVal=Math.max(...toArr,...fromArr);
+  const startTime=performance.now();
+
+  // Build a mapping: for each VALUE, where was it in fromArr and where is it in toArr
+  // So bars visually slide from old position to new position
+  // We key by (value, originalIndex) to handle duplicates
+  // For each slot in toArr, find where that value came from in fromArr
+  const fromPositions={}; // value@origIdx -> fromX
+  const toPositions={};   // value@origIdx -> toX, toH, color, label
+
+  // Tag each element with its original index to track duplicates
+  // Use a simple greedy matching: for each toArr[i], find the nearest fromArr slot with same value
+  const fromUsed=new Array(n).fill(false);
+  const barMap=[]; // barMap[i] = {val, fromX, toX, bh, color, label}
+
+  toArr.forEach((val,toIdx)=>{
+    // find best matching fromIdx (same value, not yet used, prefer same position)
+    let bestFromIdx=-1,bestDist=Infinity;
+    fromArr.forEach((fv,fi)=>{
+      if(!fromUsed[fi]&&fv===val){
+        const d=Math.abs(fi-toIdx);
+        if(d<bestDist){bestDist=d;bestFromIdx=fi;}
+      }
+    });
+    if(bestFromIdx===-1){
+      // value changed (shift overwrite) — use same slot
+      bestFromIdx=toIdx;
+    }
+    fromUsed[bestFromIdx]=true;
+
+    const fromX=pad+bestFromIdx*(bw+gap);
+    const toX=pad+toIdx*(bw+gap);
+    const bh=Math.max(18,Math.round((val/maxVal)*(H-60)));
+
+    let color=colors.default;
+    if(toState.sorted&&toState.sorted.includes(toIdx)) color=colors.sorted||colors.default;
+    if(toState.comparing&&toState.comparing.includes(toIdx)) color=colors.comparing||colors.default;
+    if(toState.shifting&&toState.shifting.includes(toIdx)) color=colors.shifting||colors.default;
+    if(toState.swapping&&toState.swapping.includes(toIdx)) color=colors.swapping||colors.default;
+    if(toState.minimum===toIdx) color=colors.minimum||colors.default;
+    if(toState.key===toIdx) color=colors.key||colors.default;
+
+    let label=null;
+    if(toState.minimum===toIdx) label={txt:'MIN',col:colors.minimum};
+    if(toState.swapping&&toState.swapping.includes(toIdx)) label={txt:'↕',col:'#c4adff'};
+    if(toState.key===toIdx) label={txt:'KEY',col:colors.key};
+    if(toState.shifting&&toState.shifting.includes(toIdx)) label={txt:'→',col:'#ff9a90'};
+
+    barMap.push({val,fromX,toX,bh,color,label,toIdx});
+  });
+
+  function drawFrame(t){
+    ctx.clearRect(-1,-1,W+2,H+2);
+
+    barMap.forEach(bar=>{
+      // skip the floating key bar and zero placeholder slots
+      if(toState.keyVal!=null && bar.val===toState.keyVal && bar.toIdx===toState.key) return;
+      if(bar.val===0) return;
+
+      const x=lerp(bar.fromX,bar.toX,t);
+      const y=H-30-bar.bh;
+
+      ctx.save();
+      ctx.fillStyle=bar.color;ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(x,y,bw,bar.bh,3);ctx.fill();
+      ctx.globalAlpha=1;
+      ctx.fillStyle=bar.color;
+      ctx.font=`500 ${bw>28?11:9}px "DM Mono",monospace`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(bar.val),x+bw/2,y-10);
+      ctx.fillStyle='#454340';
+      ctx.font='9px "DM Mono",monospace';
+      ctx.fillText(String(bar.toIdx),x+bw/2,H-12);
+      ctx.restore();
+
+      if(bar.label&&t>0.5){
+        ctx.save();ctx.fillStyle=bar.label.col;ctx.font='bold 10px sans-serif';
+        ctx.textAlign='center';ctx.globalAlpha=Math.min(1,(t-0.5)*2);
+        ctx.fillText(bar.label.txt,x+bw/2,y-22);
+        ctx.restore();
+      }
+    });
+
+    // Draw floating key bar on top if present (insertion sort)
+    if(toState.keyVal!=null){
+      const keyBh=Math.max(18,Math.round((toState.keyVal/maxVal)*(H-60)));
+      const fromKeyX=pad+((toState.keyFrom>=0?toState.keyFrom:toState.key)*(bw+gap));
+      const toKeyX=pad+(toState.key*(bw+gap));
+      const kx=lerp(fromKeyX,toKeyX,t);
+      const ky=H-30-keyBh-18;
+      ctx.save();
+      ctx.fillStyle=colors.key||'rgba(240,160,48,.9)';
+      ctx.globalAlpha=.95;
+      ctx.shadowColor=colors.key||'rgba(240,160,48,.9)';
+      ctx.shadowBlur=8;
+      ctx.beginPath();ctx.roundRect(kx,ky,bw,keyBh,3);ctx.fill();
+      ctx.shadowBlur=0;ctx.globalAlpha=1;
+      ctx.fillStyle=colors.key||'rgba(240,160,48,.9)';
+      ctx.font=`500 ${bw>28?11:9}px "DM Mono",monospace`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(toState.keyVal),kx+bw/2,ky-10);
+      ctx.fillStyle='#ffc860';ctx.font='bold 10px sans-serif';
+      ctx.fillText('KEY',kx+bw/2,ky-22);
+      ctx.restore();
+    }
+
+    // legend
+    const legendItems=Object.entries(colors).filter(([k])=>k!=='default');
+    let lx=pad;
+    legendItems.forEach(([lbl,col])=>{
+      ctx.save();
+      ctx.fillStyle=col;ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(lx,4,8,8,2);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle='#888785';ctx.font='9px "DM Mono",monospace';
+      ctx.textAlign='left';ctx.fillText(lbl,lx+11,9);
+      ctx.restore();
+      lx+=ctx.measureText(lbl).width+24;
+    });
+  }
+
+  if(dur<=1){drawFrame(1);if(onDone)onDone();return;}
+
+  function frame(now){
+    const t=easeOut(Math.min((now-startTime)/dur,1));
+    drawFrame(t);
+    if(t<1) animReq=requestAnimationFrame(frame);
+    else if(onDone) onDone();
+  }
+  animReq=requestAnimationFrame(frame);
+}
+
+function ssApplyStep(idx){
+  if(idx<0||idx>=ssSteps.length)return;
+  const prev=ssSteps[ssStepIdx]||ssSteps[0];
+  ssStepIdx=idx;
+  const step=ssSteps[idx];
+  const animDur=ssSpeed>400?350:ssSpeed>150?250:120;
+  drawBarsAnimated('ss-c',prev.arr,step.arr,prev,step,SS_COLORS,animDur);
+  setLog('ss-log',`[${idx+1}/${ssSteps.length}] ${step.msg}`,true);
+  highlightPseudo(step.pseudoLine);
+  document.getElementById('ss-prev').disabled=idx===0;
+  document.getElementById('ss-next').disabled=idx===ssSteps.length-1;
+  updateDots('ss-dots',ssSteps.length,idx);
+}
+
+function highlightPseudo(line){
+  document.querySelectorAll('#ss-pseudo .line').forEach((el,i)=>{
+    el.classList.toggle('hi',i===line);
+  });
+}
+
+function ssStep(dir){
+  if(ssAnim){cancelAnimationFrame(ssAnim);ssAnim=null;document.getElementById('ss-auto').textContent='Auto ▶';}
+  ssApplyStep(ssStepIdx+dir);
+}
+
+let ssAutoRunning=false;
+function ssAuto(){
+  if(ssAutoRunning){
+    ssAutoRunning=false;
+    document.getElementById('ss-auto').textContent='Auto ▶';
+    return;
+  }
+  ssAutoRunning=true;
+  document.getElementById('ss-auto').textContent='Stop ■';
+  function tick(){
+    if(!ssAutoRunning||ssStepIdx>=ssSteps.length-1){
+      ssAutoRunning=false;
+      document.getElementById('ss-auto').textContent='Auto ▶';
+      return;
+    }
+    ssApplyStep(ssStepIdx+1);
+    setTimeout(tick, ssSpeed);
+  }
+  tick();
+}
+
+function ssSetSpeedRange(val){
+  // val 1-100: map to ms delay (100=1 slow, 1=100 fast → invert and scale)
+  // slow end: 1000ms, fast end: 20ms, log scale
+  const t = val / 100; // 0..1 where 1 = fastest
+  ssSpeed = Math.round(Math.pow(10, lerp(Math.log10(1000), Math.log10(20), t)));
+  const lbl = document.getElementById('ss-speed-lbl');
+  if(lbl) lbl.textContent = t > 0.8 ? 'turbo' : t > 0.5 ? 'fast' : t > 0.25 ? 'medium' : 'slow';
+}
+function ssReset(){
+  ssAutoRunning=false;
+  document.getElementById('ss-auto').textContent='Auto ▶';
+  ssStepIdx=0;
+  ssApplyStep(0);
+}
+
+/* ══════════════════════════════════════════
+   INSERTION SORT — clean continuous animation
+══════════════════════════════════════════ */
+let isData=[], isSpeed=600, isAutoRunning=false, isAnimReq=null;
+let isSteps=[], isStepIdx=0; // keep step system for pseudocode sync
+const IS_COLORS={
+  default:'rgba(79,142,247,.8)',
+  sorted:'rgba(62,201,160,.75)',
+  key:'rgba(240,160,48,.95)',
+  shifting:'rgba(240,96,80,.7)',
+};
+
+function isGenerate(){
+  if(isAnimReq){cancelAnimationFrame(isAnimReq);isAnimReq=null;}
+  isAutoRunning=false;
+  document.getElementById('is-auto').textContent='Auto ▶';
+  const n=parseInt(document.getElementById('is-size').value)||8;
+  isData=Array.from({length:Math.min(Math.max(n,4),16)},()=>Math.floor(Math.random()*90)+10);
+  isSteps=[];isStepIdx=0;
+  isBuildSteps([...isData]);
+  isDrawStatic(isData,{sorted:[0],shifting:[],keyIdx:-1});
+  setLog('is-log','Array generated. Press Step or Auto to begin sorting.');
+  document.getElementById('is-prev').disabled=true;
+  document.getElementById('is-next').disabled=false;
+  updateDots('is-dots',isSteps.length,0);
+  isHighlightPseudo(-1);
+}
+
+function isDrawStatic(arr,state){
+  const canvasEl=document.getElementById('is-c');if(!canvasEl)return;
+  // only resize if needed
+  const W=canvasEl.parentElement.clientWidth;
+  const H=240;
+  if(canvasEl.width!==Math.round(W*DPR)){
+    canvasEl.width=Math.round(W*DPR);canvasEl.height=Math.round(H*DPR);
+    canvasEl.style.width=W+'px';canvasEl.style.height=H+'px';
+  }
+  const ctx=canvasEl.getContext('2d');
+  ctx.setTransform(DPR,0,0,DPR,0,0);ctx.translate(.5,.5);
+  ctx.clearRect(-1,-1,W+2,H+2);
+  const n=arr.length,pad=16,gap=6;
+  const bw=Math.floor((W-pad*2-(n-1)*gap)/n);
+  const maxVal=Math.max(...arr.filter(v=>v>0),1);
+  arr.forEach((v,i)=>{
+    if(v===0)return;
+    let col=IS_COLORS.default;
+    if(state.sorted&&state.sorted.includes(i)) col=IS_COLORS.sorted;
+    if(state.shifting&&state.shifting.includes(i)) col=IS_COLORS.shifting;
+    const bh=Math.max(18,Math.round((v/maxVal)*(H-60)));
+    const x=pad+i*(bw+gap), y=H-30-bh;
+    ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+    ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle=col;ctx.font=`500 ${bw>28?11:9}px "DM Mono",monospace`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(String(v),x+bw/2,y-10);
+    ctx.fillStyle='#454340';ctx.font='9px "DM Mono",monospace';
+    ctx.fillText(String(i),x+bw/2,H-12);
+    ctx.restore();
+  });
+  if(state.keyIdx>=0&&state.keyVal){
+    const v=state.keyVal;
+    const bh=Math.max(18,Math.round((v/maxVal)*(H-60)));
+    const x=state.keyX!==undefined?state.keyX:pad+state.keyIdx*(bw+gap);
+    const y=H-30-bh;
+    ctx.save();
+    ctx.shadowColor=IS_COLORS.key;ctx.shadowBlur=12;
+    ctx.fillStyle=IS_COLORS.key;ctx.globalAlpha=.95;
+    ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill();
+    ctx.shadowBlur=0;ctx.globalAlpha=1;
+    ctx.fillStyle=IS_COLORS.key;ctx.font=`500 ${bw>28?11:9}px "DM Mono",monospace`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(String(v),x+bw/2,y-10);
+
+    ctx.restore();
+  }
+  // legend
+  const items=[['sorted',IS_COLORS.sorted],['key',IS_COLORS.key],['shifting',IS_COLORS.shifting]];
+  let lx=pad;
+  items.forEach(([lbl,col])=>{
+    ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+    ctx.beginPath();ctx.roundRect(lx,4,8,8,2);ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle='#888785';ctx.font='9px "DM Mono",monospace';
+    ctx.textAlign='left';ctx.fillText(lbl,lx+11,9);ctx.restore();
+    lx+=ctx.measureText(lbl).width+24;
+  });
+}
+
+function isBuildSteps(arr){
+  const a=[...arr];
+  const n=a.length;
+  isSteps.push({arr:[...a],sorted:[0],shifting:[],keyIdx:-1,keyVal:null,
+    msg:`Starting. Index 0 (value ${a[0]}) is already sorted.`,pseudoLine:-1});
+  for(let i=1;i<n;i++){
+    const keyVal=a[i];
+    isSteps.push({arr:[...a],sorted:Array.from({length:i},(_,k)=>k),shifting:[],keyIdx:i,keyVal,
+      msg:`Pick up index ${i} (value ${keyVal}).`,pseudoLine:1});
+    let j=i-1;let shifted=false;
+    while(j>=0&&a[j]>keyVal){
+      a[j+1]=a[j];
+      const sa=[...a];sa[j]=0;
+      isSteps.push({arr:sa,sorted:Array.from({length:i},(_,k)=>k),shifting:[j+1],keyIdx:j,keyVal,
+        msg:`Shift ${a[j+1]} right → Key ${keyVal} moves to index ${j}.`,pseudoLine:3});
+      j--;shifted=true;
+    }
+    a[j+1]=keyVal;
+    // "placed" state — no key, gives animation a clean endpoint before next pick-up
+    isSteps.push({arr:[...a],sorted:Array.from({length:i+1},(_,k)=>k),shifting:[],keyIdx:-1,keyVal:null,
+      msg:shifted?`Inserted ${keyVal} at index ${j+1}.`:`${keyVal} already in place.`,pseudoLine:5,instant:true});
+  }
+  isSteps.push({arr:[...a],sorted:Array.from({length:n},(_,k)=>k),shifting:[],keyIdx:-1,keyVal:null,
+    msg:`Done! Array sorted.`,pseudoLine:6});
+}
+
+function isApplyStep(idx){
+  if(idx<0||idx>=isSteps.length)return;
+  isStepIdx=idx;
+  const step=isSteps[idx];
+  isDrawStatic(step.arr,step);
+  setLog('is-log',`[${idx+1}/${isSteps.length}] ${step.msg}`,true);
+  isHighlightPseudo(step.pseudoLine);
+  document.getElementById('is-prev').disabled=idx===0;
+  document.getElementById('is-next').disabled=idx===isSteps.length-1;
+  updateDots('is-dots',isSteps.length,idx);
+}
+
+// Smooth animated playback — animates between consecutive steps
+function isAnimateTo(fromStep,toStep,dur,onDone){
+  if(isAnimReq){cancelAnimationFrame(isAnimReq);isAnimReq=null;}
+  const canvasEl=document.getElementById('is-c');if(!canvasEl)return;
+  const ctx=canvasEl.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvasEl.width/dpr, H=canvasEl.height/dpr;
+  const n=toStep.arr.length,pad=16,gap=6;
+  const bw=Math.floor((W-pad*2-(n-1)*gap)/n);
+  const maxVal=Math.max(...toStep.arr.filter(v=>v>0),...fromStep.arr.filter(v=>v>0),1);
+  const startTime=performance.now();
+
+  // pre-compute source positions for each bar in toStep
+  const srcPositions=toStep.arr.map((v,i)=>{
+    if(v===0) return i;
+    if(fromStep.arr[i]===v) return i; // bar didn't move
+    // find where this value came from in fromStep
+    for(let fi=0;fi<n;fi++){
+      if(fromStep.arr[fi]===v && fi!==i) return fi;
+    }
+    return i;
+  });
+
+  function drawFrame(t){
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+
+    toStep.arr.forEach((v,i)=>{
+      if(v===0) return;
+      if(toStep.keyVal!==null && toStep.keyIdx===i) return;
+      let col=IS_COLORS.default;
+      if(toStep.sorted&&toStep.sorted.includes(i)) col=IS_COLORS.sorted;
+      if(toStep.shifting&&toStep.shifting.includes(i)) col=IS_COLORS.shifting;
+      const x=lerp(pad+srcPositions[i]*(bw+gap), pad+i*(bw+gap), t);
+      const bh=Math.max(18,Math.round((v/maxVal)*(H-60)));
+      const y=H-30-bh;
+      ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(x+.5,y+.5,bw,bh,3);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle=col;ctx.font=`500 ${bw>28?11:9}px "DM Mono",monospace`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),x+bw/2,y-10);
+      ctx.fillStyle='#454340';ctx.font='9px "DM Mono",monospace';
+      ctx.fillText(String(i),x+bw/2,H-12);
+      ctx.restore();
+    });
+
+    // key bar
+    if(toStep.keyVal!==null){
+      const v=toStep.keyVal;
+      const bh=Math.max(18,Math.round((v/maxVal)*(H-60)));
+      const fromKx=fromStep.keyIdx>=0 ? pad+fromStep.keyIdx*(bw+gap) : pad+toStep.keyIdx*(bw+gap);
+      const kx=lerp(fromKx, pad+toStep.keyIdx*(bw+gap), t);
+      const ky=H-30-bh;
+      ctx.save();
+      ctx.shadowColor=IS_COLORS.key;ctx.shadowBlur=12;
+      ctx.fillStyle=IS_COLORS.key;ctx.globalAlpha=.95;
+      ctx.beginPath();ctx.roundRect(kx+.5,ky+.5,bw,bh,3);ctx.fill();
+      ctx.shadowBlur=0;ctx.globalAlpha=1;
+      ctx.fillStyle=IS_COLORS.key;ctx.font=`500 ${bw>28?11:9}px "DM Mono",monospace`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),kx+bw/2,ky-10);
+      ctx.restore();
+    }
+
+    // legend
+    const items=[['sorted',IS_COLORS.sorted],['key',IS_COLORS.key],['shifting',IS_COLORS.shifting]];
+    let lx=pad;
+    items.forEach(([lbl,col])=>{
+      ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(lx+.5,4.5,8,8,2);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle='#888785';ctx.font='9px "DM Mono",monospace';
+      ctx.textAlign='left';ctx.fillText(lbl,lx+11,9);ctx.restore();
+      lx+=ctx.measureText(lbl).width+24;
+    });
+  }
+
+  function frame(now){
+    const t=easeOut(Math.min((now-startTime)/dur,1));
+    drawFrame(t);
+    if(t<1) isAnimReq=requestAnimationFrame(frame);
+    else{ isAnimReq=null; if(onDone) onDone(); }
+  }
+  isAnimReq=requestAnimationFrame(frame);
+}
+
+function isHighlightPseudo(line){
+  document.querySelectorAll('#is-pseudo .line').forEach((el,i)=>{
+    el.classList.toggle('hi',i===line);
+  });
+}
+
+function isStep(dir){
+  if(isAnimReq){cancelAnimationFrame(isAnimReq);isAnimReq=null;}
+  if(isAutoRunning){isAutoRunning=false;document.getElementById('is-auto').textContent='Auto ▶';}
+  const from=isSteps[isStepIdx]||isSteps[0];
+  const toIdx=isStepIdx+dir;
+  if(toIdx<0||toIdx>=isSteps.length)return;
+  const to=isSteps[toIdx];
+  const dur=to.instant?0:(isSpeed>400?400:isSpeed>150?280:140);
+  isAnimateTo(from,to,dur,()=>{isApplyStep(toIdx);});
+  // update UI immediately
+  setLog('is-log',`[${toIdx+1}/${isSteps.length}] ${to.msg}`,true);
+  isHighlightPseudo(to.pseudoLine);
+  document.getElementById('is-prev').disabled=toIdx===0;
+  document.getElementById('is-next').disabled=toIdx===isSteps.length-1;
+  updateDots('is-dots',isSteps.length,toIdx);
+  isStepIdx=toIdx;
+}
+
+function isAuto(){
+  if(isAutoRunning){isAutoRunning=false;document.getElementById('is-auto').textContent='Auto ▶';return;}
+  isAutoRunning=true;document.getElementById('is-auto').textContent='Stop ■';
+  function tick(){
+    if(!isAutoRunning||isStepIdx>=isSteps.length-1){
+      isAutoRunning=false;document.getElementById('is-auto').textContent='Auto ▶';return;
+    }
+    const from=isSteps[isStepIdx];
+    const toIdx=isStepIdx+1;
+    const to=isSteps[toIdx];
+    // instant steps (placement confirmation) get 0 animation, no delay
+    const dur=to.instant?0:(isSpeed>400?400:isSpeed>150?280:140);
+    const delay=to.instant?0:Math.max(0,isSpeed-dur);
+    isAnimateTo(from,to,dur,()=>{
+      isApplyStep(toIdx);
+      setTimeout(tick,delay);
+    });
+    setLog('is-log',`[${toIdx+1}/${isSteps.length}] ${to.msg}`,true);
+    isHighlightPseudo(to.pseudoLine);
+    document.getElementById('is-prev').disabled=toIdx===0;
+    document.getElementById('is-next').disabled=toIdx===isSteps.length-1;
+    updateDots('is-dots',isSteps.length,toIdx);
+    isStepIdx=toIdx;
+  }
+  tick();
+}
+
+function isReset(){
+  isAutoRunning=false;document.getElementById('is-auto').textContent='Auto ▶';
+  isStepIdx=0;isApplyStep(0);
+}
+
+function isSetSpeedRange(val){
+  const t=val/100;
+  isSpeed=Math.round(Math.pow(10,lerp(Math.log10(1000),Math.log10(20),t)));
+  const lbl=document.getElementById('is-speed-lbl');
+  if(lbl) lbl.textContent=t>0.8?'turbo':t>0.5?'fast':t>0.25?'medium':'slow';
+}
+
+/* ══════════════════════════════════════════
+   SECTIONS
+══════════════════════════════════════════ */
+const SECTIONS=[
+  {id:'selection',icon:'🔍',label:'Selection Sort',
+   badge:'O(N²) · in-place · not stable',
+   desc:'On each pass, find the smallest unsorted element and move it to its correct position. Simple to understand but slow for large arrays.',
+   controls:`
+     <span class="clbl">size</span>
+     <input class="ci" id="ss-size" value="8" type="number" min="4" max="16">
+     <button class="cb p" onclick="ssGenerate()">New array</button>
+     <div class="csep"></div>
+     <button class="cb" id="ss-prev" onclick="ssStep(-1)" disabled>← Prev</button>
+     <button class="cb" id="ss-next" onclick="ssStep(1)">Next →</button>
+     <button class="cb go" id="ss-auto" onclick="ssAuto()">Auto ▶</button>
+     <button class="cb" onclick="ssReset()">Reset</button>
+     <div class="csep"></div>
+     <span class="clbl">speed</span>
+     <div style="display:flex;align-items:center;gap:8px">
+       <span style="font-size:11px">🐢</span>
+       <input type="range" id="ss-speed-range" min="1" max="100" value="75"
+         style="width:110px;accent-color:var(--teal);cursor:pointer"
+         oninput="ssSetSpeedRange(this.value)">
+       <span style="font-size:11px">🚀</span>
+       <span id="ss-speed-lbl" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);min-width:32px">fast</span>
+     </div>
+     <div style="margin-left:auto;display:flex;gap:4px" id="ss-dots"></div>`,
+   canvas:'ss-c',ch:220,
+   extra:`
+     <div id="ss-pseudo" class="pseudo">
+       <span class="line"><span class="kw">for</span> i = 0 <span class="kw">to</span> N−2:  <span class="cmt">// outer pass</span></span>
+       <span class="line">&nbsp;&nbsp;minIdx = i  <span class="cmt">// assume current position is minimum</span></span>
+       <span class="line">&nbsp;&nbsp;<span class="kw">for</span> j = i+1 <span class="kw">to</span> N−1:  <span class="cmt">// scan rest of array</span></span>
+       <span class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> arr[j] &lt; arr[minIdx]:  <span class="cmt">// found smaller element</span></span>
+       <span class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minIdx = j  <span class="cmt">// update minimum</span></span>
+       <span class="line">&nbsp;&nbsp;<span class="kw">if</span> minIdx ≠ i:  <span class="cmt">// only swap if needed</span></span>
+       <span class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">swap</span>(arr[i], arr[minIdx])  <span class="cmt">// place minimum in correct spot</span></span>
+       <span class="line"><span class="cmt">// done — array is sorted</span></span>
+     </div>
+     <table class="complexity-table" style="margin-top:14px">
+       <thead><tr><th>Case</th><th>Time</th><th>Why</th></tr></thead>
+       <tbody>
+         <tr><td>Best</td><td class="ok">O(N²)</td><td style="color:var(--text2)">Always scans the full unsorted portion — no early exit</td></tr>
+         <tr><td>Worst</td><td class="bad">O(N²)</td><td style="color:var(--text2)">Same as best — comparisons never change</td></tr>
+         <tr><td>Average</td><td class="bad">O(N²)</td><td style="color:var(--text2)">Always N(N−1)/2 comparisons regardless of input</td></tr>
+         <tr><td>Space</td><td class="good">O(1)</td><td style="color:var(--text2)">In-place — only uses a few variables</td></tr>
+       </tbody>
+     </table>     <div style="margin-top:16px">
+       <div style="font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">Key facts</div>
+       <div style="display:flex;flex-direction:column;gap:8px">
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Total comparisons</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">(N−1) · N/2 = O(N²)</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Pass 1 scans N−1 elements, pass 2 scans N−2, and so on:<br><br>
+           <strong style="color:var(--text)">(N−1)+(N−2)+…+1 = N(N−1)/2</strong><br><br>
+           This is the worst case because selection sort has no early exit — every pass always scans the full unsorted portion regardless of the input.</div>
+         </div>
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Outer loop passes</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">N−1 passes</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">The last element is automatically in place after N−1 passes — no Nth pass needed.</div>
+         </div>
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Scaling rule</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">(kN)² / N² = k²</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Multiplying N by k makes the runtime k² times slower. To find k, divide the new input size by the old one:<br><br>
+           <strong style="color:var(--text)">k = new N / old N → runtime multiplier = k²</strong><br><br>
+           Example: sorting 20 vs 10 elements → k = 20/10 = 2 → 2² = <strong style="color:#ffc860">4× slower</strong>.<br>
+           Or directly: 20² / 10² = 400 / 100 = 4.</div>
+         </div>
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#7de8c8;margin-bottom:5px">Space</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">O(1) — in-place</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Only uses a few variables (loop counters, minIdx). No extra arrays needed.</div>
+         </div>
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#7de8c8;margin-bottom:5px">Swaps</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">At most N−1 swaps</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">One swap per pass at most. Far fewer than bubble sort. Good when writes are expensive.</div>
+         </div>
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#ffc860;margin-bottom:5px">Always Θ(N²)</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">No early exit — the inner loop always scans the full unsorted portion. Best = worst = average. Unlike most sorts, a sorted input gives no speedup.</div>
+         </div>
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#ff9a90;margin-bottom:5px">Not stable</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Equal elements can swap relative order. Example: [3a, 3b, 1] → [1, 3b, 3a]. 3a and 3b flipped.</div>
+         </div>
+
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#c4adff;margin-bottom:5px">Best used for</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">
+             <strong style="color:var(--text)">Small arrays</strong> where simplicity matters more than speed.<br><br>
+             <strong style="color:var(--text)">When writes are expensive</strong> — selection sort makes at most N−1 swaps, far fewer than most other O(N²) sorts. Good for memory where each write costs significantly more than a read (e.g. flash storage).<br><br>
+             <strong style="color:var(--text)">Not good for</strong> large datasets — always O(N²) regardless of input, so faster algorithms (merge sort, quick sort) are preferred for N > ~1000.
+           </div>
+         </div>
+
+       </div>
+     </div>`,
+   log:'ss-log',logDef:'Generate an array and step through the sort.',
+   callout:'<strong>Key idea:</strong> on every pass, scan the entire unsorted portion to find the minimum, then swap it into place. This means selection sort always does exactly N(N−1)/2 comparisons — the same whether the array is already sorted or completely reversed. Best and worst case are identical, so Θ(N²) applies.',
+   init:()=>ssGenerate()},
+
+  {id:'insertion',icon:'🃏',label:'Insertion Sort',
+   badge:'O(N²) worst · O(N) best · stable',
+   desc:'Build the sorted array one element at a time by picking each element and sliding it left into its correct position. Like sorting cards in your hand.',
+   controls:`
+     <span class="clbl">size</span>
+     <input class="ci" id="is-size" value="8" type="number" min="4" max="16">
+     <button class="cb p" onclick="isGenerate()">New array</button>
+     <div class="csep"></div>
+     <button class="cb" id="is-prev" onclick="isStep(-1)" disabled>← Prev</button>
+     <button class="cb" id="is-next" onclick="isStep(1)">Next →</button>
+     <button class="cb go" id="is-auto" onclick="isAuto()">Auto ▶</button>
+     <button class="cb" onclick="isReset()">Reset</button>
+     <div class="csep"></div>
+     <span class="clbl">speed</span>
+     <div style="display:flex;align-items:center;gap:8px">
+       <span style="font-size:11px">🐢</span>
+       <input type="range" id="is-speed-range" min="1" max="100" value="75"
+         style="width:110px;accent-color:var(--teal);cursor:pointer"
+         oninput="isSetSpeedRange(this.value)">
+       <span style="font-size:11px">🚀</span>
+       <span id="is-speed-lbl" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);min-width:32px">fast</span>
+     </div>
+     <div style="margin-left:auto;display:flex;gap:4px" id="is-dots"></div>`,
+   canvas:'is-c',ch:220,
+   extra:`
+     <div id="is-pseudo" class="pseudo">
+       <span class="line"><span class="kw">for</span> i = 1 <span class="kw">to</span> N−1:  <span class="cmt">// start from second element</span></span>
+       <span class="line">&nbsp;&nbsp;key = arr[i]  <span class="cmt">// element to insert</span></span>
+       <span class="line">&nbsp;&nbsp;j = i − 1</span>
+       <span class="line">&nbsp;&nbsp;<span class="kw">while</span> j ≥ 0 <span class="kw">and</span> arr[j] > key:  <span class="cmt">// shift larger elements right</span></span>
+       <span class="line">&nbsp;&nbsp;&nbsp;&nbsp;arr[j+1] = arr[j]  <span class="cmt">// shift right</span></span>
+       <span class="line">&nbsp;&nbsp;&nbsp;&nbsp;j = j − 1</span>
+       <span class="line">&nbsp;&nbsp;arr[j+1] = key  <span class="cmt">// insert key in correct spot</span></span>
+       <span class="line"><span class="cmt">// done</span></span>
+     </div>
+     <table class="complexity-table" style="margin-top:14px">
+       <thead><tr><th>Case</th><th>Time</th><th>Why</th></tr></thead>
+       <tbody>
+         <tr><td>Best</td><td class="good">O(N)</td><td style="color:var(--text2)">Already sorted — inner loop never executes, just N−1 comparisons</td></tr>
+         <tr><td>Worst</td><td class="bad">O(N²)</td><td style="color:var(--text2)">Reverse sorted — every element shifts all the way left</td></tr>
+         <tr><td>Average</td><td class="bad">O(N²)</td><td style="color:var(--text2)">Each element shifts about halfway on average</td></tr>
+         <tr><td>Space</td><td class="good">O(1)</td><td style="color:var(--text2)">In-place — only needs the key variable</td></tr>
+       </tbody>
+     </table>
+     <div style="margin-top:16px">
+       <div style="font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">Key facts</div>
+       <div style="display:flex;flex-direction:column;gap:8px">
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Best case</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">O(N) — already sorted input</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Best case is an <strong style="color:var(--text)">already sorted array</strong>. Each element only needs 1 comparison to confirm it's in place — the while loop exits immediately every time:<br><br>
+           <strong style="color:var(--text)">N−1 comparisons total → O(N)</strong><br><br>
+           This is insertion sort's big advantage over selection sort, which always does N(N−1)/2 regardless.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Worst case</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">O(N²) — reverse sorted input</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Worst case is a <strong style="color:var(--text)">fully reversed array</strong>. Every element picked up is smaller than everything to its left, so it shifts all the way to index 0 with no early exit:<br><br>
+           <strong style="color:var(--text)">1+2+3+…+(N−1) = N(N−1)/2</strong><br><br>
+</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Scaling rule</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">(kN)² / N² = k²</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Same as selection sort for the worst case. To find k, divide the new input size by the old one:<br><br>
+           <strong style="color:var(--text)">k = new N / old N → runtime multiplier = k²</strong><br><br>
+           Example: sorting 20 vs 10 elements → k = 20/10 = 2 → 2² = <strong style="color:#ffc860">4× slower</strong>.<br>
+           Or directly: 20² / 10² = 400 / 100 = 4.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#7de8c8;margin-bottom:5px">Stable</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Equal elements are never swapped past each other — the while loop stops when arr[j] = key. Relative order of equal elements is preserved.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#7de8c8;margin-bottom:5px">Good for nearly-sorted data</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">If only a few elements are out of place, insertion sort is extremely fast — close to O(N). This makes it practical for small or nearly-sorted arrays where O(N log N) sorts have too much overhead.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#7de8c8;margin-bottom:5px">O(1) space</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">In-place — only needs a single key variable and loop counters. No extra arrays or recursion stack needed.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#c4adff;margin-bottom:5px">Best used for</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">
+             <strong style="color:var(--text)">Nearly sorted arrays</strong> — if only a few elements are out of place, insertion sort runs close to O(N). This is its biggest advantage.<br><br>
+             <strong style="color:var(--text)">Small arrays</strong> — for N &lt; ~20, insertion sort is often faster than O(N log N) sorts because it has very low overhead (no recursion, no partitioning).<br><br>
+             <strong style="color:var(--text)">Online sorting</strong> — can sort a list as it receives elements one at a time, since it always maintains a sorted left portion.<br><br>
+             <strong style="color:var(--text)">Not good for</strong> large reversed or random arrays — worst case is still O(N²).
+           </div>
+         </div>
+       </div>
+     </div>`,
+   log:'is-log',logDef:'Generate an array and step through the sort.',
+   callout:'<strong>Key idea:</strong> maintain a sorted left portion and insert each new element into its correct position by shifting larger elements right. Unlike selection sort, insertion sort can exit the inner loop early — so a nearly-sorted array runs in close to O(N). Best and worst case differ, so Θ does not apply.',
+   init:()=>isGenerate()},
+];
+
+/* ══════════════════════════════════════════
+   SHELL SORT
+══════════════════════════════════════════ */
+let shData=[], shSteps=[], shStepIdx=0, shSpeed=600, shAutoRunning=false;
+const SH_COLORS={
+  default:'rgba(79,142,247,.7)',
+  sorted:'rgba(62,201,160,.7)',
+  comparing:'rgba(240,160,48,.9)',
+  swapping:'rgba(159,126,247,.9)',
+  gap:'rgba(240,96,80,.5)',
+};
+
+function shGenerate(){
+  if(shAutoRunning){shAutoRunning=false;document.getElementById('sh-auto').textContent='Auto ▶';}
+  const n=parseInt(document.getElementById('sh-size').value)||8;
+  shData=Array.from({length:Math.min(Math.max(n,4),16)},()=>Math.floor(Math.random()*90)+10);
+  shSteps=[];shStepIdx=0;
+  shBuildSteps([...shData]);
+  shDraw(shData,{sorted:[],comparing:[],swapping:[],gap:0});
+  const firstGap=Math.floor(shData.length/2);
+  setLog('sh-log','Array generated. N='+shData.length+' → first gap = N/2 = '+firstGap+'. Gaps: '+
+    (function(){const g=[];let x=firstGap;while(x>=1){g.push(x);x=Math.floor(x/2);}return g.join(' → ');})());
+  document.getElementById('sh-prev').disabled=true;
+  document.getElementById('sh-next').disabled=false;
+  updateDots('sh-dots',shSteps.length,0);
+  shHighlightPseudo(-1);
+}
+
+function shBuildSteps(arr){
+  const a=[...arr];
+  const n=a.length;
+  const allGaps=[];
+  let g=Math.floor(n/2);
+  while(g>=1){allGaps.push(g);g=Math.floor(g/2);}
+  const gaps=allGaps;
+
+  shSteps.push({arr:[...a],sorted:[],comparing:[],swapping:[],gap:0,phase:'main',
+    msg:'Starting shell sort. Watch the bars split into color-coded groups for each gap pass.',
+    pseudoLine:-1});
+
+  gaps.forEach(gap=>{
+    // PREVIEW — single row, color coded by group, before splitting
+    shSteps.push({arr:[...a],sorted:[],comparing:[],swapping:[],gap,phase:'main',
+      msg:'Gap = '+gap+' (N/2 = '+Math.floor(n/2)+', then halved each pass). Bars are color-coded by group — same color = sorted together. Watch them split apart.',
+      pseudoLine:0});
+
+    // SPLIT phase — show bars grouped into rows
+    const splitPhase=gap===1?'main':'split';
+    shSteps.push({arr:[...a],sorted:[],comparing:[],swapping:[],gap,phase:splitPhase,
+      msg:'Gap = '+gap+(gap===1?' — final insertion sort pass on nearly-sorted array.':'. The array splits into '+gap+' groups — elements '+gap+' positions apart share a color and get sorted together.'),
+      pseudoLine:0});
+
+    for(let i=gap;i<n;i++){
+      const keyVal=a[i];
+      const ph=gap===1?'main':'split';
+      shSteps.push({arr:[...a],sorted:[],comparing:[i],swapping:[],gap,phase:ph,
+        msg:'gap='+gap+', i='+i+': compare '+keyVal+' with element '+gap+' positions left (index '+(i-gap)+', value '+a[i-gap]+').',
+        pseudoLine:2});
+      let j=i;
+      while(j>=gap && a[j-gap]>keyVal){
+        shSteps.push({arr:[...a],sorted:[],comparing:[j-gap,j],swapping:[j-gap,j],gap,phase:ph,
+          msg:a[j-gap]+' > '+keyVal+' — swap index '+(j-gap)+' and '+j+'.',
+          pseudoLine:3});
+        [a[j],a[j-gap]]=[a[j-gap],a[j]];
+        shSteps.push({arr:[...a],sorted:[],comparing:[],swapping:[],gap,phase:ph,
+          msg:'Swapped. Continue checking left.',pseudoLine:3});
+        j-=gap;
+      }
+    }
+
+    // MERGE back — show bars returning to single row with colors
+    shSteps.push({arr:[...a],sorted:[],comparing:[],swapping:[],gap,phase:'main',
+      msg:'Gap='+gap+' pass done — groups merge back. Each group is now sorted within itself.',
+      pseudoLine:4});
+  });
+
+  shSteps.push({arr:[...a],sorted:Array.from({length:n},(_,k)=>k),comparing:[],swapping:[],gap:0,phase:'main',
+    msg:'Done! Every element found its correct spot. The array is fully sorted.',pseudoLine:5});
+}
+
+function shDraw(arr,state){
+  const gap=state.gap||0;
+  const phase=state.phase||'main';
+  const n=arr.length;
+  const maxVal=Math.max.apply(null,arr.concat([1]));
+
+  const GROUP_COLORS=[
+    'rgba(240,160,48,.85)',   // amber
+    'rgba(62,201,160,.85)',   // teal
+    'rgba(79,142,247,.85)',   // blue
+    'rgba(159,126,247,.85)',  // purple
+    'rgba(240,96,80,.85)',    // coral
+    'rgba(80,200,120,.85)',   // green
+    'rgba(240,180,80,.85)',   // yellow
+    'rgba(100,180,240,.85)',  // sky
+    'rgba(220,100,180,.85)',  // pink
+    'rgba(140,220,100,.85)',  // lime
+  ];
+
+  if(phase==='split'&&gap>1){
+    const pad=16,bGap=5,rowH=60,rowGap=12,rowPad=14;
+    const totalH=rowPad+(rowH+rowGap)*gap+rowPad;
+    const canvasEl=document.getElementById('sh-c');if(!canvasEl)return;
+    const dpr=window.devicePixelRatio||1;
+    const W=canvasEl.parentElement.clientWidth;
+    // only resize if height changed
+    if(canvasEl.height!==Math.round(totalH*dpr)||canvasEl.width!==Math.round(W*dpr)){
+      canvasEl.width=Math.round(W*dpr);canvasEl.height=Math.round(totalH*dpr);
+      canvasEl.style.width=W+'px';canvasEl.style.height=totalH+'px';
+    }
+    const ctx=canvasEl.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,totalH);
+
+    const maxGroupSize=Math.ceil(n/gap);
+    const bw=Math.max(14,Math.floor((W-pad*2-(maxGroupSize-1)*bGap)/maxGroupSize));
+
+    for(let g=0;g<gap;g++){
+      const rowColor=GROUP_COLORS[g%GROUP_COLORS.length];
+      const rowY=rowPad+g*(rowH+rowGap);
+      const group=[];
+      for(let i=g;i<n;i+=gap) group.push({val:arr[i],idx:i});
+
+      // row label
+      ctx.save();ctx.fillStyle=rowColor;ctx.font='9px "DM Mono",monospace';
+      ctx.textAlign='left';ctx.fillText('group '+g,2,rowY+rowH/2);ctx.restore();
+
+      group.forEach(function(item,gi){
+        const v=item.val,idx=item.idx;
+        let col=rowColor;
+        if(state.swapping&&state.swapping.includes(idx)) col='rgba(255,255,255,.95)';
+        else if(state.comparing&&state.comparing.includes(idx)) col='rgba(255,220,80,.95)';
+        const bh=Math.max(10,Math.round((v/maxVal)*(rowH-22)));
+        const x=pad+gi*(bw+bGap),y=rowY+rowH-14-bh;
+        ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.88;
+        ctx.beginPath();ctx.roundRect(x,y,bw,bh,2);ctx.fill();ctx.globalAlpha=1;
+        ctx.fillStyle=col;
+        ctx.font='500 '+(bw>22?10:8)+'px "DM Mono",monospace';
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(String(v),x+bw/2,y-7);
+        ctx.fillStyle='#454340';ctx.font='8px "DM Mono",monospace';
+        ctx.fillText('['+idx+']',x+bw/2,rowY+rowH-5);
+        ctx.restore();
+      });
+    }
+    // gap label
+    ctx.save();ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='500 11px "DM Mono",monospace';
+    ctx.textAlign='right';ctx.fillText('gap = '+gap,W-pad,12);ctx.restore();
+
+  } else {
+    // Single row view
+    const canvasEl=document.getElementById('sh-c');if(!canvasEl)return;
+    const dpr=window.devicePixelRatio||1;
+    const W=canvasEl.parentElement.clientWidth;
+    const H=220;
+    if(canvasEl.width!==Math.round(W*dpr)||canvasEl.height!==Math.round(H*dpr)){
+      canvasEl.width=Math.round(W*dpr);canvasEl.height=Math.round(H*dpr);
+      canvasEl.style.width=W+'px';canvasEl.style.height=H+'px';
+    }
+    const ctx=canvasEl.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+    const pad=16,bGap=6;
+    const bw=Math.floor((W-pad*2-(n-1)*bGap)/n);
+
+    arr.forEach(function(v,i){
+      let col;
+      if(state.swapping&&state.swapping.includes(i)) col='rgba(159,126,247,.95)';
+      else if(state.comparing&&state.comparing.includes(i)) col='rgba(240,160,48,.95)';
+      else if(state.sorted&&state.sorted.includes(i)) col='rgba(62,201,160,.75)';
+      else if(gap>1) col=GROUP_COLORS[i%gap%GROUP_COLORS.length];
+      else col=SH_COLORS.default;
+      const bh=Math.max(18,Math.round((v/maxVal)*(H-60)));
+      const x=pad+i*(bw+bGap),y=H-30-bh;
+      ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle=col;ctx.font='500 '+(bw>28?11:9)+'px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),x+bw/2,y-10);
+      ctx.fillStyle='#454340';ctx.font='9px "DM Mono",monospace';
+      ctx.fillText(String(i),x+bw/2,H-12);
+      ctx.restore();
+    });
+
+    // legend
+    if(gap>1){
+      let lx=pad;
+      for(let g=0;g<Math.min(gap,GROUP_COLORS.length);g++){
+        ctx.save();ctx.fillStyle=GROUP_COLORS[g%GROUP_COLORS.length];ctx.globalAlpha=.85;
+        ctx.beginPath();ctx.roundRect(lx,4,8,8,2);ctx.fill();ctx.globalAlpha=1;
+        ctx.fillStyle='#888785';ctx.font='9px "DM Mono",monospace';
+        ctx.textAlign='left';ctx.fillText('group '+g,lx+11,9);ctx.restore();
+        lx+=ctx.measureText('group '+g).width+26;
+      }
+      ctx.save();ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='500 11px "DM Mono",monospace';
+      ctx.textAlign='right';ctx.fillText('gap = '+gap,W-pad,12);ctx.restore();
+    } else {
+      const items=[['sorted',SH_COLORS.sorted],['comparing',SH_COLORS.comparing],['swapping',SH_COLORS.swapping]];
+      let lx=pad;
+      items.forEach(function(item){
+        ctx.save();ctx.fillStyle=item[1];ctx.globalAlpha=.85;
+        ctx.beginPath();ctx.roundRect(lx,4,8,8,2);ctx.fill();ctx.globalAlpha=1;
+        ctx.fillStyle='#888785';ctx.font='9px "DM Mono",monospace';
+        ctx.textAlign='left';ctx.fillText(item[0],lx+11,9);ctx.restore();
+        lx+=ctx.measureText(item[0]).width+24;
+      });
+    }
+  }
+}
+
+let shAnimReq=null;
+
+function shAnimateSplit(arr,gap,toSplit,dur,onDone){
+  if(shAnimReq){cancelAnimationFrame(shAnimReq);shAnimReq=null;}
+  const canvasEl=document.getElementById('sh-c');if(!canvasEl)return;
+
+  const n=arr.length;
+  const maxVal=Math.max.apply(null,arr.concat([1]));
+  const pad=16,bGap_main=6,bGap_split=5;
+  const GROUP_COLORS=['rgba(240,160,48,.85)','rgba(62,201,160,.85)','rgba(79,142,247,.85)','rgba(159,126,247,.85)','rgba(240,96,80,.85)','rgba(80,200,120,.85)','rgba(240,180,80,.85)','rgba(100,180,240,.85)','rgba(220,100,180,.85)','rgba(140,220,100,.85)'];
+
+  const mainH=220,rowH=60,rowGap=12,rowPad=14;
+  const splitH=rowPad+(rowH+rowGap)*gap+rowPad;
+  const fromH=toSplit?mainH:splitH;
+  const toH=toSplit?splitH:mainH;
+
+  const dpr=window.devicePixelRatio||1;
+  const W=canvasEl.parentElement.clientWidth;
+  const ctx=canvasEl.getContext('2d');
+
+  const bw_main=Math.floor((W-pad*2-(n-1)*bGap_main)/n);
+  const maxGroupSize=Math.ceil(n/gap);
+  const bw_split=Math.max(14,Math.floor((W-pad*2-(maxGroupSize-1)*bGap_split)/maxGroupSize));
+
+  const startTime=performance.now();
+
+  function frame(now){
+    const t=easeOut(Math.min((now-startTime)/dur,1));
+
+    // interpolate canvas height smoothly
+    const curH=Math.round(lerp(fromH,toH,t));
+    if(canvasEl.height!==Math.round(curH*dpr)){
+      canvasEl.width=Math.round(W*dpr);
+      canvasEl.height=Math.round(curH*dpr);
+      canvasEl.style.width=W+'px';
+      canvasEl.style.height=curH+'px';
+    }
+
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,curH);
+
+    for(let i=0;i<n;i++){
+      const v=arr[i];
+      const g=i%gap;
+      const gi=Math.floor(i/gap);
+      const col=GROUP_COLORS[g%GROUP_COLORS.length];
+
+      // main row position
+      const srcX=pad+i*(bw_main+bGap_main);
+      const bh_main=Math.max(18,Math.round((v/maxVal)*(mainH-60)));
+      const srcY=mainH-30-bh_main;
+
+      // split row position — scale row positions relative to current canvas height
+      const rowY=rowPad+g*(rowH+rowGap);
+      const bh_split=Math.max(10,Math.round((v/maxVal)*(rowH-22)));
+      const tgtX=pad+gi*(bw_split+bGap_split);
+      const tgtY=rowY+rowH-14-bh_split;
+
+      const fromX=toSplit?srcX:tgtX;
+      const fromY=toSplit?srcY:tgtY;
+      const fromBh=toSplit?bh_main:bh_split;
+      const fromBw=toSplit?bw_main:bw_split;
+      const toX=toSplit?tgtX:srcX;
+      const toY=toSplit?tgtY:srcY;
+      const toBh=toSplit?bh_split:bh_main;
+      const toBw=toSplit?bw_split:bw_main;
+
+      const cx=lerp(fromX,toX,t);
+      const cy=lerp(fromY,toY,t);
+      const cbh=lerp(fromBh,toBh,t);
+      const cbw=lerp(fromBw,toBw,t);
+
+      ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(cx,cy,cbw,cbh,2);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle=col;ctx.font='500 '+(cbw>22?10:8)+'px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),cx+cbw/2,cy-7);
+      ctx.restore();
+    }
+
+    if(t<1) shAnimReq=requestAnimationFrame(frame);
+    else{shAnimReq=null;if(onDone)onDone();}
+  }
+  shAnimReq=requestAnimationFrame(frame);
+}
+
+function shAnimateSwap(fromArr,toArr,gap,state,dur,onDone){
+  if(shAnimReq){cancelAnimationFrame(shAnimReq);shAnimReq=null;}
+  const canvasEl=document.getElementById('sh-c');if(!canvasEl)return;
+  const ctx=canvasEl.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvasEl.width/dpr, H=canvasEl.height/dpr;
+  const n=toArr.length;
+  const maxVal=Math.max.apply(null,toArr.concat(fromArr).concat([1]));
+  const pad=16,bGap=5,rowH=60,rowGap=12,rowPad=14;
+  const maxGroupSize=Math.ceil(n/gap);
+  const bw=Math.max(14,Math.floor((W-pad*2-(maxGroupSize-1)*bGap)/maxGroupSize));
+  const GROUP_COLORS=['rgba(240,160,48,.85)','rgba(62,201,160,.85)','rgba(79,142,247,.85)','rgba(159,126,247,.85)','rgba(240,96,80,.85)','rgba(80,200,120,.85)','rgba(240,180,80,.85)','rgba(100,180,240,.85)','rgba(220,100,180,.85)','rgba(140,220,100,.85)'];
+  const startTime=performance.now();
+
+  // For each slot in toArr, find where the value came from in fromArr
+  const srcSlots=toArr.map((v,i)=>{
+    if(fromArr[i]===v) return i;
+    for(let fi=0;fi<n;fi++){
+      if(fromArr[fi]===v&&fi!==i) return fi;
+    }
+    return i;
+  });
+
+  function frame(now){
+    const t=easeOut(Math.min((now-startTime)/dur,1));
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+
+    for(let i=0;i<n;i++){
+      const v=toArr[i];
+      const g=i%gap; // which group/row
+      const gi=Math.floor(i/gap); // position within group
+      const rowY=rowPad+g*(rowH+rowGap);
+      const bh=Math.max(10,Math.round((v/maxVal)*(rowH-22)));
+
+      // source x (within same row)
+      const srcI=srcSlots[i];
+      const srcGi=Math.floor(srcI/gap);
+      const fromX=pad+srcGi*(bw+bGap);
+      const toX=pad+gi*(bw+bGap);
+      const cx=lerp(fromX,toX,t);
+      const y=rowY+rowH-14-bh;
+
+      let col=GROUP_COLORS[g%GROUP_COLORS.length];
+      if(state.swapping&&state.swapping.includes(i)) col='rgba(255,255,255,.95)';
+      else if(state.comparing&&state.comparing.includes(i)) col='rgba(255,220,80,.95)';
+
+      ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.88;
+      ctx.beginPath();ctx.roundRect(cx,y,bw,bh,2);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle=col;ctx.font='500 '+(bw>22?10:8)+'px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),cx+bw/2,y-7);
+      ctx.fillStyle='#454340';ctx.font='8px "DM Mono",monospace';
+      ctx.fillText('['+i+']',cx+bw/2,rowY+rowH-5);
+      ctx.restore();
+    }
+
+    // row labels
+    for(let g=0;g<gap;g++){
+      const rowColor=GROUP_COLORS[g%GROUP_COLORS.length];
+      const rowY=rowPad+g*(rowH+rowGap);
+      ctx.save();ctx.fillStyle=rowColor;ctx.font='9px "DM Mono",monospace';
+      ctx.textAlign='left';ctx.fillText('group '+g,2,rowY+rowH/2);ctx.restore();
+    }
+
+    if(t<1) shAnimReq=requestAnimationFrame(frame);
+    else{shAnimReq=null;if(onDone)onDone();}
+  }
+  shAnimReq=requestAnimationFrame(frame);
+}
+
+function shApplyStep(idx, onDone){
+  if(idx<0||idx>=shSteps.length)return;
+  const prevStep=shSteps[shStepIdx]||shSteps[0];
+  shStepIdx=idx;
+  const step=shSteps[idx];
+
+  const prevPhase=prevStep.phase||'main';
+  const nextPhase=step.phase||'main';
+  const phaseChanged=prevPhase!==nextPhase||(prevStep.gap!==step.gap&&step.phase==='split');
+
+  setLog('sh-log','['+(idx+1)+'/'+shSteps.length+'] '+step.msg,true);
+  shHighlightPseudo(step.pseudoLine);
+  document.getElementById('sh-prev').disabled=idx===0;
+  document.getElementById('sh-next').disabled=idx===shSteps.length-1;
+  updateDots('sh-dots',shSteps.length,idx);
+
+  if(phaseChanged&&step.gap>1){
+    const toSplit=nextPhase==='split';
+    const animDur=shSpeed>400?700:shSpeed>150?450:200;
+    shAnimateSplit(step.arr,step.gap,toSplit,animDur,()=>{
+      shDraw(step.arr,step);
+      if(onDone) onDone();
+    });
+  } else if(nextPhase==='split'&&step.gap>1&&prevStep.arr){
+    // animate bar movement within the split rows
+    const animDur=shSpeed>400?320:shSpeed>150?200:80;
+    shAnimateSwap(prevStep.arr,step.arr,step.gap,step,animDur,()=>{
+      shDraw(step.arr,step);
+      if(onDone) onDone();
+    });
+  } else if(nextPhase==='main'&&step.gap<=1&&prevStep.arr){
+    // gap=1 final pass — use same bar animation as selection/insertion sort
+    const animDur=shSpeed>400?320:shSpeed>150?200:80;
+    drawBarsAnimated('sh-c',prevStep.arr,step.arr,prevStep,step,SH_COLORS,animDur,()=>{
+      if(onDone) onDone();
+    });
+  } else {
+    if(shAnimReq){cancelAnimationFrame(shAnimReq);shAnimReq=null;}
+    shDraw(step.arr,step);
+    if(onDone) onDone();
+  }
+}
+
+function shUpdateSubarrays(arr,state){
+  // now handled inside shDraw
+}
+
+function shHighlightPseudo(line){
+  document.querySelectorAll('#sh-pseudo .line').forEach((el,i)=>el.classList.toggle('hi',i===line));
+}
+function shStep(dir){
+  if(shAutoRunning){shAutoRunning=false;document.getElementById('sh-auto').textContent='Auto ▶';}
+  shApplyStep(shStepIdx+dir);
+}
+function shAuto(){
+  if(shAutoRunning){shAutoRunning=false;document.getElementById('sh-auto').textContent='Auto ▶';return;}
+  shAutoRunning=true;document.getElementById('sh-auto').textContent='Stop ■';
+  function tick(){
+    if(!shAutoRunning||shStepIdx>=shSteps.length-1){
+      shAutoRunning=false;document.getElementById('sh-auto').textContent='Auto ▶';return;
+    }
+    const nextIdx=shStepIdx+1;
+    const step=shSteps[nextIdx];
+    const prevStep=shSteps[shStepIdx];
+    const prevPhase=prevStep.phase||'main';
+    const nextPhase=step.phase||'main';
+    const phaseChanged=prevPhase!==nextPhase||(prevStep.gap!==step.gap&&step.phase==='split');
+    const isSwapAnim=!phaseChanged&&nextPhase==='split'&&step.gap>1;
+    const isGap1Anim=nextPhase==='main'&&step.gap<=1;
+    const animDur=phaseChanged&&step.gap>1?(shSpeed>400?700:shSpeed>150?450:200):(isSwapAnim||isGap1Anim)?(shSpeed>400?320:shSpeed>150?200:80):0;
+    const pauseAfter=Math.max(30,shSpeed-animDur);
+    shApplyStep(nextIdx,()=>{
+      setTimeout(tick,pauseAfter);
+    });
+  }
+  tick();
+}
+function shReset(){shAutoRunning=false;document.getElementById('sh-auto').textContent='Auto ▶';shStepIdx=0;shApplyStep(0);}
+function shSetSpeedRange(val){
+  const t=val/100;
+  shSpeed=Math.round(Math.pow(10,lerp(Math.log10(1000),Math.log10(20),t)));
+  const lbl=document.getElementById('sh-speed-lbl');
+  if(lbl) lbl.textContent=t>0.8?'turbo':t>0.5?'fast':t>0.25?'medium':'slow';
+}
+
+SECTIONS.push(
+  {id:'shell',icon:'🐚',label:'Shell Sort',
+   badge:'O(N log² N) avg · in-place · not stable',
+   desc:'Shell sort extends insertion sort by first sorting elements far apart, then reducing the gap until it reaches 1. This makes the final insertion sort pass very fast because the array is already nearly sorted.',
+   controls:`
+     <span class="clbl">size</span>
+     <input class="ci" id="sh-size" value="8" type="number" min="4" max="16">
+     <button class="cb p" onclick="shGenerate()">New array</button>
+     <div class="csep"></div>
+     <button class="cb" id="sh-prev" onclick="shStep(-1)" disabled>← Prev</button>
+     <button class="cb" id="sh-next" onclick="shStep(1)">Next →</button>
+     <button class="cb go" id="sh-auto" onclick="shAuto()">Auto ▶</button>
+     <button class="cb" onclick="shReset()">Reset</button>
+     <div class="csep"></div>
+     <span class="clbl">speed</span>
+     <div style="display:flex;align-items:center;gap:8px">
+       <span style="font-size:11px">🐢</span>
+       <input type="range" id="sh-speed-range" min="1" max="100" value="75"
+         style="width:110px;accent-color:var(--teal);cursor:pointer"
+         oninput="shSetSpeedRange(this.value)">
+       <span style="font-size:11px">🚀</span>
+       <span id="sh-speed-lbl" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);min-width:32px">fast</span>
+     </div>
+     <div style="margin-left:auto;display:flex;gap:4px" id="sh-dots"></div>`,
+   canvas:'sh-c',ch:220,
+   extra:"<div id=\"sh-pseudo\" class=\"pseudo\">\n       <span class=\"line\"><span class=\"kw\">for</span> each gap in [701,301,132,57,23,10,4,1]:  <span class=\"cmt\">// Ciura gap sequence</span></span>\n       <span class=\"line\">&nbsp;&nbsp;<span class=\"kw\">if</span> gap \u2265 N: <span class=\"kw\">skip</span></span>\n       <span class=\"line\">&nbsp;&nbsp;<span class=\"kw\">for</span> i = gap <span class=\"kw\">to</span> N\u22121:  <span class=\"cmt\">// insertion sort with this gap</span></span>\n       <span class=\"line\">&nbsp;&nbsp;&nbsp;&nbsp;<span class=\"kw\">while</span> j \u2265 gap <span class=\"kw\">and</span> arr[j\u2212gap] > arr[j]: <span class=\"fn\">swap</span>(arr[j], arr[j\u2212gap]); j\u2212=gap</span>\n       <span class=\"line\">&nbsp;&nbsp;<span class=\"cmt\">// gap pass complete</span></span>\n       <span class=\"line\"><span class=\"cmt\">// done \u2014 gap=1 was the final insertion sort pass</span></span>\n     </div>\n     <table class=\"complexity-table\" style=\"margin-top:14px\">\n       <thead><tr><th>Case</th><th>Time</th><th>Why</th></tr></thead>\n       <tbody>\n         <tr><td>Best</td><td class=\"good\">O(N log N)</td><td style=\"color:var(--text2)\">Nearly sorted \u2014 most gap passes do almost no work</td></tr>\n         <tr><td>Worst</td><td class=\"ok\">O(N log\u00b2 N)</td><td style=\"color:var(--text2)\">Depends on gap sequence \u2014 Ciura is best known empirically</td></tr>\n         <tr><td>Average</td><td class=\"ok\">O(N log\u00b2 N)</td><td style=\"color:var(--text2)\">Much better than O(N\u00b2) in practice</td></tr>\n         <tr><td>Space</td><td class=\"good\">O(1)</td><td style=\"color:var(--text2)\">In-place \u2014 no extra arrays needed</td></tr>\n       </tbody>\n     </table>\n     <div style=\"margin-top:16px\">\n       <div style=\"font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px\">Key facts</div>\n       <div style=\"display:flex;flex-direction:column;gap:8px\">\n         <div style=\"background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px\">\n           <div style=\"font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px\">Core idea</div>\n           <div style=\"font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px\">insertion sort with shrinking gaps</div>\n           <div style=\"font-size:13px;color:var(--text2);line-height:1.6\">Shell sort is insertion sort run multiple times with decreasing gap sizes. Each group is sorted using <strong style=\"color:var(--text)\">InsertionSortInterleaved</strong> \u2014 identical to regular insertion sort except it steps <strong style=\"color:var(--text)\">gap</strong> positions at a time instead of 1. A large gap moves elements long distances quickly. By the time gap\u00a0=\u00a01, the array is nearly sorted so that final pass is very fast.</div>\n         </div>\n         <div style=\"background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px\">\n           <div style=\"font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px\">Gap sequence</div>\n           <div style=\"font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px\">\u2026, 23, 10, 4, 1  (Ciura)</div>\n           <div style=\"font-size:13px;color:var(--text2);line-height:1.6\">The gap sequence determines performance. The Ciura sequence (1, 4, 10, 23, 57, 132, 301, 701) is the best known empirically. Shell's original sequence (N/2, N/4, \u2026, 1) also works but is slower in the worst case.</div>\n         </div>\n         <div style=\"background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px\">\n           <div style=\"font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px\">Scaling rule</div>\n           <div style=\"font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px\">k = new N / old N \u2192 multiplier \u2248 k\u00b2 log(k)</div>\n           <div style=\"font-size:13px;color:var(--text2);line-height:1.6\">Better than O(N\u00b2) \u2014 doubling input increases runtime by roughly 4\u00d7log(2) \u2248 5.5\u00d7 instead of 4\u00d7. Significantly faster than selection or insertion sort for large arrays.</div>\n         </div>\n         <div style=\"background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px\">\n           <div style=\"font-family:var(--font-mono);font-size:11px;color:#ff9a90;margin-bottom:5px\">Not stable</div>\n           <div style=\"font-size:13px;color:var(--text2);line-height:1.6\">Equal elements can change relative order because the large-gap swaps can jump over equal elements. The gap > 1 passes don't preserve insertion order.</div>\n         </div>\n         <div style=\"background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px\">\n           <div style=\"font-family:var(--font-mono);font-size:11px;color:#c4adff;margin-bottom:5px\">Best used for</div>\n           <div style=\"font-size:13px;color:var(--text2);line-height:1.6\">\n             <strong style=\"color:var(--text)\">Medium-sized arrays</strong> \u2014 faster than insertion and selection sort, simpler to implement than merge or quick sort.<br><br>\n             <strong style=\"color:var(--text)\">Embedded systems</strong> \u2014 O(1) space, no recursion, good cache performance.<br><br>\n             <strong style=\"color:var(--text)\">Not good for</strong> very large datasets where O(N log N) sorts like merge sort or quick sort are preferable.\n           </div>\n         </div>\n\n         <div style=\"background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px\">\n           <div style=\"font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px\">Valid gap sequence rules</div>\n           <div style=\"font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px\">must decrease \u2192 must end at 1</div>\n           <div style=\"font-size:13px;color:var(--text2);line-height:1.6\">A valid gap sequence must: (1) be in <strong style=\"color:var(--text)\">decreasing order</strong>, (2) end at exactly <strong style=\"color:var(--text)\">1</strong>, and (3) all values must be <strong style=\"color:var(--text)\">less than N</strong>. A common choice is powers of 2 minus 1 in decreasing order: 31, 15, 7, 3, 1 (where each value = 2\u1d4f\u22121).</div>\n         </div>\n         <div style=\"background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px\">\n           <div style=\"font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px\">How many group sorts happen per shell sort?</div>\n           <div style=\"font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px\">sum of all gap values</div>\n           <div style=\"font-size:13px;color:var(--text2);line-height:1.6\">Shell sort calls insertion sort once for each group in each pass. The number of groups per pass equals the gap value. So the total number of individual group sorts = <strong style=\"color:var(--text)\">sum of all gap values</strong>.<br><br>Example: gaps [15, 7, 3, 1] \u2192 pass 1 sorts 15 groups, pass 2 sorts 7, pass 3 sorts 3, pass 4 sorts 1 \u2192 15+7+3+1 = <strong style=\"color:var(--text)\">26 group sorts total</strong>.</div>\n         </div>\n       </div>\n     </div>",
+   log:'sh-log',logDef:'Generate an array and step through the sort.',
+   callout:'<strong>Gap formula:</strong> start at gap = N/2, halve after each pass until gap = 1. For N=8: gaps are 4 → 2 → 1. The large first gap moves elements long distances quickly so the final gap=1 pass (plain insertion sort) has almost nothing left to do.',
+   init:()=>shGenerate()}
+);
+/* ══════════════════════════════════════════
+   QUICK SORT
+══════════════════════════════════════════ */
+let qsData=[], qsSteps=[], qsStepIdx=0, qsSpeed=600, qsAutoRunning=false;
+let qsPivotMode='middle';
+const QS_COLORS={
+  default:'rgba(79,142,247,.7)',
+  sorted:'rgba(62,201,160,.7)',
+  pivot:'rgba(240,96,80,.9)',
+  comparing:'rgba(240,160,48,.9)',
+  swapping:'rgba(159,126,247,.9)',
+  excluded:'rgba(255,255,255,.12)',
+  low:'rgba(79,142,247,.5)',
+  high:'rgba(240,160,48,.5)',
+};
+
+function qsGenerate(){
+  if(qsAutoRunning){qsAutoRunning=false;document.getElementById('qs-auto').textContent='Auto ▶';}
+  const n=parseInt(document.getElementById('qs-size').value)||8;
+  qsData=Array.from({length:Math.min(Math.max(n,4),16)},()=>Math.floor(Math.random()*90)+10);
+  qsSteps=[];qsStepIdx=0;
+  qsBuildSteps([...qsData]);
+  qsDraw(qsData,{sorted:[],pivot:-1,low:-1,high:-1,comparing:[],swapping:[],lowPart:[],highPart:[]});
+  setLog('qs-log','Array generated. Press Step or Auto to begin sorting.');
+  document.getElementById('qs-prev').disabled=true;
+  document.getElementById('qs-next').disabled=false;
+  updateDots('qs-dots',qsSteps.length,0);
+  qsHighlightPseudo(-1);
+}
+
+function qsSetPivotMode(mode){
+  qsPivotMode=mode;
+  document.getElementById('qspiv-first').className='cb'+(mode==='first'?' p':'');
+  document.getElementById('qspiv-mid').className='cb'+(mode==='middle'?' p':'');
+  document.getElementById('qspiv-last').className='cb'+(mode==='last'?' p':'');
+  if(qsData.length){
+    qsAutoRunning=false;document.getElementById('qs-auto').textContent='Auto ▶';
+    qsSteps=[];qsStepIdx=0;
+    qsBuildSteps([...qsData]);
+    qsApplyStep(0);
+    updateDots('qs-dots',qsSteps.length,0);
+  }
+}
+function qsBuildSteps(arr){
+  const a=[...arr];
+  const n=a.length;
+
+  qsSteps.push({arr:[...a],sorted:[],pivot:-1,low:-1,high:-1,comparing:[],swapping:[],lowPart:[],highPart:[],
+    msg:'Starting quick sort! We\'ll pick a pivot, split everything smaller to the left and everything bigger to the right, then repeat on each side until sorted.',
+    pseudoLine:-1});
+
+  // Lomuto partition — used for first/last pivot
+  function lomutoPartition(lowIdx,highIdx,pivotIdx){
+    const pivotVal=a[pivotIdx];
+    const excl=[...Array.from({length:lowIdx},(_,k)=>k),...Array.from({length:a.length-highIdx-1},(_,k)=>highIdx+1+k)];
+
+    qsSteps.push({arr:[...a],sorted:[],pivot:pivotIdx,low:lowIdx,high:highIdx,comparing:[],swapping:[],lowPart:[],highPart:[],
+      msg:'Working on the section from index '+lowIdx+' to '+highIdx+'. Pivot = '+pivotVal+' (the '+qsPivotMode+' element). Goal: get everything ≤ '+pivotVal+' on the left.',pseudoLine:0});
+
+    // silently move pivot to end
+    if(pivotIdx!==highIdx){[a[pivotIdx],a[highIdx]]=[a[highIdx],a[pivotIdx]];}
+    let piv=highIdx;
+
+    let i=lowIdx-1;
+    for(let j=lowIdx;j<highIdx;j++){
+      qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:j,high:highIdx,comparing:[j],swapping:[],lowPart:[],highPart:[],excluded:excl,
+        msg:'Compare arr['+j+']='+a[j]+' with pivot '+pivotVal+'. '+(a[j]<=pivotVal?a[j]+' ≤ pivot — small enough, move it to the left side.':a[j]+' > pivot — too big for the left side, skip it.'),pseudoLine:2});
+      if(a[j]<=pivotVal){
+        i++;
+        if(i!==j){
+          qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:i,high:j,comparing:[],swapping:[i,j],lowPart:[],highPart:[],
+            msg:'Swap arr['+i+']='+a[i]+' and arr['+j+']='+a[j]+' to move the small one to the left.',pseudoLine:3});
+          [a[i],a[j]]=[a[j],a[i]];
+          if(piv===i)piv=j;else if(piv===j)piv=i;
+          qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:i,high:j,comparing:[],swapping:[],lowPart:[],highPart:[],
+            msg:'Done swapping!',pseudoLine:3});
+        }
+      }
+    }
+    const pivotPos=i+1;
+    if(pivotPos!==piv){
+      qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:pivotPos,high:piv,comparing:[],swapping:[pivotPos,piv],lowPart:[],highPart:[],
+        msg:'Everything is sorted around the pivot. Drop pivot '+pivotVal+' into its final spot at index '+pivotPos+'.',pseudoLine:4});
+      [a[pivotPos],a[piv]]=[a[piv],a[pivotPos]];
+    }
+    sortedSetRef.add(pivotPos);
+    qsSteps.push({arr:[...a],sorted:[...sortedSetRef],pivot:-1,low:-1,high:-1,comparing:[],swapping:[],lowPart:[],highPart:[],
+      msg:'Pivot '+pivotVal+' placed at index '+pivotPos+' — it will never move again!',pseudoLine:5});
+    return pivotPos-1; // return lowEnd for textbook-compatible recursion
+  }
+
+  // Textbook two-pointer partition — used for middle pivot
+  function twoPointerPartition(lowIdx,highIdx){
+    const mid=Math.floor(lowIdx+(highIdx-lowIdx)/2);
+    const pivotVal=a[mid];
+    const midDesc='midpoint = '+lowIdx+' + ('+highIdx+' - '+lowIdx+') / 2 = '+mid;
+
+    qsSteps.push({arr:[...a],sorted:[],pivot:mid,low:lowIdx,high:highIdx,comparing:[],swapping:[],lowPart:[],highPart:[],
+      msg:'Working on the section from index '+lowIdx+' to '+highIdx+'. The pivot is arr['+mid+'] = '+pivotVal+'. Goal: get everything ≤ '+pivotVal+' on the left, everything ≥ '+pivotVal+' on the right.',pseudoLine:0});
+
+    let L=lowIdx, R=highIdx, piv=mid;
+    while(true){
+      while(a[L]<pivotVal){
+        qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:L,high:R,comparing:[L],swapping:[],lowPart:[],highPart:[],
+          msg:'arr['+L+']='+a[L]+' is smaller than pivot '+pivotVal+' — it belongs on the left, keep moving L right.',pseudoLine:1});
+        L++;
+      }
+      qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:L,high:R,comparing:[],swapping:[],lowPart:[],highPart:[],
+        msg:'arr['+L+']='+a[L]+' is ≥ pivot — L found something that might be in the wrong place. Stop here.',pseudoLine:1});
+      while(pivotVal<a[R]){
+        qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:L,high:R,comparing:[R],swapping:[],lowPart:[],highPart:[],
+          msg:'arr['+R+']='+a[R]+' is bigger than pivot '+pivotVal+' — it belongs on the right, keep moving R left.',pseudoLine:2});
+        R--;
+      }
+      qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:L,high:R,comparing:[],swapping:[],lowPart:[],highPart:[],
+        msg:'arr['+R+']='+a[R]+' is ≤ pivot — R found something that might be in the wrong place. Stop here.',pseudoLine:2});
+      if(L>=R){
+        qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:L,high:R,comparing:[],swapping:[],
+          lowPart:Array.from({length:R+1-lowIdx},(_,k)=>lowIdx+k),
+          highPart:Array.from({length:highIdx-R},(_,k)=>R+1+k),
+          msg:'L and R crossed — everything is on the right side. Low partition ends at index '+R+'.',pseudoLine:3});
+        return R;
+      }
+      qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:L,high:R,comparing:[],swapping:[L,R],lowPart:[],highPart:[],
+        msg:'arr['+L+']='+a[L]+' is too big to be on the left. arr['+R+']='+a[R]+' is too small to be on the right. Swap them!',pseudoLine:4});
+      [a[L],a[R]]=[a[R],a[L]];
+      if(piv===L)piv=R;else if(piv===R)piv=L;
+      qsSteps.push({arr:[...a],sorted:[],pivot:piv,low:L,high:R,comparing:[],swapping:[],lowPart:[],highPart:[],
+        msg:'Swapped! Now move L right and R left and keep looking.',pseudoLine:4});
+      L++;R--;
+    }
+  }
+
+  function partition(lowIdx,highIdx){
+    if(qsPivotMode==='first') return lomutoPartition(lowIdx,highIdx,lowIdx);
+    if(qsPivotMode==='last') return lomutoPartition(lowIdx,highIdx,highIdx);
+    return twoPointerPartition(lowIdx,highIdx);
+  }
+
+    const sortedSet=new Set();
+    const sortedSetRef=sortedSet;
+  function quickSort(lo,hi){
+    if(hi<=lo){
+      if(hi===lo) sortedSet.add(lo);
+      return;
+    }
+    const lowEnd=partition(lo,hi);
+    // guard: if partition didn't shrink the problem, mark pivot sorted and stop
+    if(lowEnd>=hi||lowEnd<lo){
+      for(let k=lo;k<=hi;k++) sortedSet.add(k);
+      return;
+    }
+    qsSteps.push({arr:[...a],sorted:[...sortedSet],pivot:-1,low:-1,high:-1,comparing:[],swapping:[],
+      lowPart:Array.from({length:lowEnd+1-lo},(_,k)=>lo+k),
+      highPart:Array.from({length:hi-lowEnd},(_,k)=>lowEnd+1+k),
+      msg:'Now do the same thing to the left group ['+lo+'..'+lowEnd+'] and the right group ['+(lowEnd+1)+'..'+hi+']. Repeat until everything is sorted.',
+      pseudoLine:5});
+    quickSort(lo,lowEnd);
+    quickSort(lowEnd+1,hi);
+  }
+
+  quickSort(0,n-1);
+  qsSteps.push({arr:[...a],sorted:Array.from({length:n},(_,i)=>i),pivot:-1,low:-1,high:-1,comparing:[],swapping:[],lowPart:[],highPart:[],
+    msg:'Done! Every element found its correct spot. The array is fully sorted.',pseudoLine:6});
+}
+let qsAnimReq=null;
+function qsDraw(arr,state){
+  const canvasEl=document.getElementById('qs-c');if(!canvasEl)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvasEl.parentElement.clientWidth;
+  const H=220;
+  if(canvasEl.width!==Math.round(W*dpr)||canvasEl.height!==Math.round(H*dpr)){
+    canvasEl.width=Math.round(W*dpr);canvasEl.height=Math.round(H*dpr);
+    canvasEl.style.width=W+'px';canvasEl.style.height=H+'px';
+  }
+  const ctx=canvasEl.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  const n=arr.length,pad=16,gap=6;
+  const bw=Math.floor((W-pad*2-(n-1)*gap)/n);
+  const maxVal=Math.max.apply(null,arr.concat([1]));
+
+  arr.forEach(function(v,i){
+    let col=QS_COLORS.default;
+    if(state.lowPart&&state.lowPart.includes(i)) col=QS_COLORS.low;
+    if(state.highPart&&state.highPart.includes(i)) col=QS_COLORS.high;
+    if(state.sorted&&state.sorted.includes(i)) col=QS_COLORS.sorted;
+    if(state.comparing&&state.comparing.includes(i)) col=QS_COLORS.comparing;
+    if(state.swapping&&state.swapping.includes(i)) col=QS_COLORS.swapping;
+    if(state.pivot===i) col=QS_COLORS.pivot;
+    const bh=Math.max(18,Math.round((v/maxVal)*(H-60)));
+    const x=pad+i*(bw+gap),y=H-30-bh;
+    ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+    ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle=col;ctx.font='500 '+(bw>28?11:9)+'px "DM Mono",monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(String(v),x+bw/2,y-10);
+    ctx.fillStyle='#454340';ctx.font='9px "DM Mono",monospace';
+    ctx.fillText(String(i),x+bw/2,H-12);
+    if(state.pivot===i){
+      ctx.save();
+      ctx.strokeStyle='rgba(240,96,80,.9)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.roundRect(x-1,y-1,bw+2,bh+2,3);ctx.stroke();
+      ctx.fillStyle=QS_COLORS.pivot;ctx.font='bold 9px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.fillText('PIVOT',x+bw/2,y-22);
+      ctx.restore();
+    }
+    if(state.low===i&&state.pivot!==i){
+      ctx.save();ctx.fillStyle=QS_COLORS.comparing;ctx.font='bold 9px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.fillText('L',x+bw/2,y-22);ctx.restore();
+    }
+    if(state.high===i&&state.pivot!==i&&state.low!==i){
+      ctx.save();ctx.fillStyle=QS_COLORS.comparing;ctx.font='bold 9px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.fillText('R',x+bw/2,y-22);ctx.restore();
+    }
+    ctx.restore();
+  });
+
+  const items=[['sorted',QS_COLORS.sorted],['pivot',QS_COLORS.pivot],['low part',QS_COLORS.low],['high part',QS_COLORS.high],['swapping',QS_COLORS.swapping]];
+  let lx=pad;
+  items.forEach(function(item){
+    ctx.save();ctx.fillStyle=item[1];ctx.globalAlpha=.85;
+    ctx.beginPath();ctx.roundRect(lx,4,8,8,2);ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle='#888785';ctx.font='9px "DM Mono",monospace';
+    ctx.textAlign='left';ctx.fillText(item[0],lx+11,9);ctx.restore();
+    lx+=ctx.measureText(item[0]).width+24;
+  });
+}
+
+function qsApplyStep(idx){
+  if(idx<0||idx>=qsSteps.length)return;
+  const prev=qsSteps[qsStepIdx]||qsSteps[0];
+  qsStepIdx=idx;
+  const step=qsSteps[idx];
+  const animDur=qsSpeed>400?320:qsSpeed>150?200:80;
+  drawBarsAnimated('qs-c',prev.arr,step.arr,prev,step,QS_COLORS,animDur);
+  setTimeout(()=>qsDraw(step.arr,step),animDur+10);
+  setLog('qs-log','['+(idx+1)+'/'+qsSteps.length+'] '+step.msg,true);
+  qsHighlightPseudo(step.pseudoLine);
+  document.getElementById('qs-prev').disabled=idx===0;
+  document.getElementById('qs-next').disabled=idx===qsSteps.length-1;
+  updateDots('qs-dots',qsSteps.length,idx);
+}
+
+function qsHighlightPseudo(line){
+  document.querySelectorAll('#qs-pseudo .line').forEach((el,i)=>el.classList.toggle('hi',i===line));
+}
+function qsStep(dir){
+  if(qsAutoRunning){qsAutoRunning=false;document.getElementById('qs-auto').textContent='Auto ▶';}
+  qsApplyStep(qsStepIdx+dir);
+}
+function qsAuto(){
+  if(qsAutoRunning){qsAutoRunning=false;document.getElementById('qs-auto').textContent='Auto ▶';return;}
+  qsAutoRunning=true;document.getElementById('qs-auto').textContent='Stop ■';
+  function tick(){
+    if(!qsAutoRunning||qsStepIdx>=qsSteps.length-1){qsAutoRunning=false;document.getElementById('qs-auto').textContent='Auto ▶';return;}
+    qsApplyStep(qsStepIdx+1);setTimeout(tick,qsSpeed);
+  }
+  tick();
+}
+function qsReset(){qsAutoRunning=false;document.getElementById('qs-auto').textContent='Auto ▶';qsStepIdx=0;qsApplyStep(0);}
+function qsSetSpeedRange(val){
+  const t=val/100;
+  qsSpeed=Math.round(Math.pow(10,lerp(Math.log10(1000),Math.log10(20),t)));
+  const lbl=document.getElementById('qs-speed-lbl');
+  if(lbl) lbl.textContent=t>0.8?'turbo':t>0.5?'fast':t>0.25?'medium':'slow';
+}
+
+SECTIONS.push(
+  {id:'quick',icon:'⚡',label:'Quick Sort',
+   badge:'O(N log N) avg · O(N²) worst · in-place · not stable',
+   desc:'Pick a pivot, partition the array so everything smaller is to its left and everything larger is to its right, then recursively sort each side. One of the fastest sorting algorithms in practice.',
+   controls:`
+     <span class="clbl">size</span>
+     <input class="ci" id="qs-size" value="8" type="number" min="4" max="16">
+     <button class="cb p" onclick="qsGenerate()">New array</button>
+     <div class="csep"></div>
+     <span class="clbl">pivot</span>
+     <button class="cb" id="qspiv-first" onclick="qsSetPivotMode('first')">First</button>
+     <button class="cb p" id="qspiv-mid" onclick="qsSetPivotMode('middle')">Middle</button>
+     <button class="cb" id="qspiv-last" onclick="qsSetPivotMode('last')">Last</button>
+     <div class="csep"></div>
+     <button class="cb" id="qs-prev" onclick="qsStep(-1)" disabled>← Prev</button>
+     <button class="cb" id="qs-next" onclick="qsStep(1)">Next →</button>
+     <button class="cb go" id="qs-auto" onclick="qsAuto()">Auto ▶</button>
+     <button class="cb" onclick="qsReset()">Reset</button>
+     <div class="csep"></div>
+     <span class="clbl">speed</span>
+     <div style="display:flex;align-items:center;gap:8px">
+       <span style="font-size:11px">🐢</span>
+       <input type="range" id="qs-speed-range" min="1" max="100" value="75"
+         style="width:110px;accent-color:var(--teal);cursor:pointer"
+         oninput="qsSetSpeedRange(this.value)">
+       <span style="font-size:11px">🚀</span>
+       <span id="qs-speed-lbl" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);min-width:32px">fast</span>
+     </div>
+     <div style="margin-left:auto;display:flex;gap:4px" id="qs-dots"></div>`,
+   canvas:'qs-c',ch:220,
+   extra:`
+     <div id="qs-pseudo" class="pseudo">
+       <span class="line">midpoint = lowIndex + (highIndex − lowIndex) / 2  <span class="cmt">// middle element</span></span>
+       <span class="line"><span class="kw">while</span> arr[lowIndex] &lt; pivot: lowIndex++  <span class="cmt">// advance left pointer</span></span>
+       <span class="line"><span class="kw">while</span> pivot &lt; arr[highIndex]: highIndex--  <span class="cmt">// advance right pointer</span></span>
+       <span class="line"><span class="kw">if</span> lowIndex ≥ highIndex: <span class="kw">return</span> highIndex  <span class="cmt">// done — return end of low partition</span></span>
+       <span class="line"><span class="fn">swap</span>(arr[lowIndex], arr[highIndex]); lowIndex++; highIndex--  <span class="cmt">// swap out-of-place pair</span></span>
+       <span class="line"><span class="kw">Quicksort</span>(low, lowEndIndex); <span class="kw">Quicksort</span>(lowEndIndex+1, high)  <span class="cmt">// recurse both sides</span></span>
+       <span class="line"><span class="cmt">// done</span></span>
+     </div>
+     <table class="complexity-table" style="margin-top:14px">
+       <thead><tr><th>Case</th><th>Time</th><th>Why</th></tr></thead>
+       <tbody>
+         <tr><td>Best</td><td class="good">O(N log N)</td><td style="color:var(--text2)">Pivot always splits array in half — balanced partitions</td></tr>
+         <tr><td>Worst</td><td class="bad">O(N²)</td><td style="color:var(--text2)">Pivot is always the smallest or largest — one side always empty</td></tr>
+         <tr><td>Average</td><td class="good">O(N log N)</td><td style="color:var(--text2)">Random data gives roughly balanced splits on average</td></tr>
+         <tr><td>Space</td><td class="ok">O(log N)</td><td style="color:var(--text2)">Recursive call stack depth</td></tr>
+       </tbody>
+     </table>
+     <div style="margin-top:16px">
+       <div style="font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">Key facts</div>
+       <div style="display:flex;flex-direction:column;gap:8px">
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Pivot</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">the element everything is compared to</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">The pivot is chosen from the array (this visualizer uses the last element). After partitioning, the pivot is placed in its <strong style="color:var(--text)">final sorted position</strong> — it never moves again. Every element to its left is smaller, every element to its right is larger.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Partition</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">rearrange so small elements are left, large are right</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Scan left to right — any element ≤ pivot gets swapped to the left partition. After the scan, swap the pivot into the boundary position. The array is now split into two unsorted halves with the pivot fixed in the middle.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Worst case — O(N²)</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">already sorted or reverse sorted input</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">If the pivot is always the min or max (e.g. picking last element on a sorted array), one partition is always empty and the other has N−1 elements. This gives N recursive calls each doing N work → <strong style="color:var(--text)">O(N²)</strong>. Same scaling rule as selection sort: k = new N / old N → k² times slower.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Average case — O(N log N)</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">(kN) log(kN) / N log N ≈ k (for large N)</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">On random data, pivots roughly split the array in half each time. log N levels of recursion, each doing N comparisons total → O(N log N). Doubling the input roughly doubles the time (much better than O(N²)).</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#ff9a90;margin-bottom:5px">Not stable</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Equal elements can change relative order during partitioning — swaps can move equal elements past each other.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#c4adff;margin-bottom:5px">Best used for</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">
+             <strong style="color:var(--text)">General purpose sorting</strong> — the go-to algorithm in practice. Fast on random data with low overhead.<br><br>
+             <strong style="color:var(--text)">Large arrays</strong> — O(N log N) average beats O(N²) algorithms significantly for large N.<br><br>
+             <strong style="color:var(--text)">Not good for</strong> already-sorted data with a naive pivot choice, or when stability is required.
+           </div>
+         </div>
+       </div>
+     </div>`,
+   log:'qs-log',logDef:'Generate an array and step through the sort.',
+   callout:'<strong>Key idea:</strong> after partitioning, the pivot is in its final position forever. Quick sort recursively conquers the left and right halves independently. Each pivot placed = one element permanently sorted. The dimmed bars show which elements are outside the current partition range.',
+   init:()=>qsGenerate()}
+);
+
+/* ══════════════════════════════════════════
+   MERGE SORT
+══════════════════════════════════════════ */
+let msData=[], msSteps=[], msStepIdx=0, msSpeed=600, msAutoRunning=false, msAnimReq=null;
+const MS_COLORS={
+  default:'rgba(79,142,247,.7)',
+  sorted:'rgba(62,201,160,.7)',
+  comparing:'rgba(240,160,48,.9)',
+  swapping:'rgba(159,126,247,.9)',
+  left:'rgba(79,142,247,.85)',
+  right:'rgba(240,96,80,.85)',
+  merged:'rgba(62,201,160,.7)',
+};
+
+function msGenerate(){
+  if(msAutoRunning){msAutoRunning=false;document.getElementById('ms-auto').textContent='Auto ▶';}
+  const n=parseInt(document.getElementById('ms-size').value)||8;
+  msData=Array.from({length:Math.min(Math.max(n,4),16)},()=>Math.floor(Math.random()*90)+10);
+  msSteps=[];msStepIdx=0;
+  msBuildSteps([...msData]);
+  if(msSteps.length){msDraw(msData,msSteps[0]);updateDots('ms-dots',msSteps.length,0);}
+  setLog('ms-log','Array generated. N='+msData.length+'. Merge sort splits the array in half repeatedly, then merges sorted halves back together.');
+  document.getElementById('ms-prev').disabled=true;
+  document.getElementById('ms-next').disabled=false;
+  updateDots('ms-dots',msSteps.length,0);
+  msHighlightPseudo(-1);
+}
+
+function msBuildSteps(arr){
+  const orig=[...arr];
+  const a=[...arr];
+  const n=a.length;
+
+  // Each group stores {lo, hi, status, bars:[{origIdx, val}]}
+  // bars are the actual elements still in the group, with their snapshot values
+  // origIdx is just for stable animation key — values come from bars[].val
+
+  var currentMerged=[]; // bars placed into merged result so far in current merge operation
+
+  function step(groups, msg, pseudoLine){
+    msSteps.push({
+      groups: groups.map(function(g){
+        return{lo:g.lo, hi:g.hi, status:g.status, bars:g.bars.map(function(b){return{origIdx:b.origIdx,val:b.val};})};
+      }),
+      mergedBars: currentMerged.map(function(b){return{origIdx:b.origIdx,val:b.val};}),
+      arr:[...a], msg:msg, pseudoLine:pseudoLine
+    });
+  }
+
+  // initial bars: origIdx = array index, val = original value
+  var initBars=orig.map(function(v,i){return{origIdx:i,val:v};});
+  var currentGroups=[{lo:0,hi:n-1,status:'default',bars:[...initBars]}];
+  step(currentGroups,'Starting merge sort. The array splits into smaller pieces, then merges back in sorted order.',-1);
+
+  function mergeSort(lo,hi){
+    if(hi<=lo) return;
+    const mid=Math.floor(lo+(hi-lo)/2);
+    var ng=[];
+    currentGroups.forEach(function(g){
+      if(g.lo===lo&&g.hi===hi){
+        // split bars into left and right based on original position
+        var leftBars=g.bars.filter(function(b){return b.origIdx<=mid;});
+        var rightBars=g.bars.filter(function(b){return b.origIdx>mid;});
+        ng.push({lo:lo,hi:mid,status:'left',bars:leftBars});
+        ng.push({lo:mid+1,hi:hi,status:'right',bars:rightBars});
+      } else {
+        ng.push({lo:g.lo,hi:g.hi,status:g.status,bars:[...g.bars]});
+      }
+    });
+    currentGroups=ng;
+    var leftVals=ng.find(function(g){return g.lo===lo&&g.hi===mid;}).bars.map(function(b){return b.val;});
+    var rightVals=ng.find(function(g){return g.lo===mid+1&&g.hi===hi;}).bars.map(function(b){return b.val;});
+    step(currentGroups,'Split ['+lo+'..'+hi+']: left ['+leftVals.join(',')+'] and right ['+rightVals.join(',')+
+      ']. j = '+lo+' + ('+hi+' - '+lo+') / 2 = '+mid+'.',0);
+    mergeSort(lo,mid);
+    mergeSort(mid+1,hi);
+    merge(lo,mid,hi);
+  }
+
+  function merge(lo,mid,hi){
+    // reset merged display for this merge operation
+    currentMerged=[];
+    // get left and right bars from current state
+    var leftGroup=currentGroups.find(function(g){return g.lo===lo&&g.hi===mid;});
+    var rightGroup=currentGroups.find(function(g){return g.lo===mid+1&&g.hi===hi;});
+    var leftBars=[...leftGroup.bars];
+    var rightBars=[...rightGroup.bars];
+
+    step(currentGroups.map(function(g){
+      if(g.lo===lo&&g.hi===mid) return{lo:g.lo,hi:g.hi,status:'left',bars:[...leftBars]};
+      if(g.lo===mid+1&&g.hi===hi) return{lo:g.lo,hi:g.hi,status:'right',bars:[...rightBars]};
+      return{lo:g.lo,hi:g.hi,status:g.status,bars:[...g.bars]};
+    }),'Merge left ['+leftBars.map(function(b){return b.val;}).join(',')+'] and right ['+
+      rightBars.map(function(b){return b.val;}).join(',')+'] into one sorted group.',1);
+
+    var remLeft=[...leftBars];
+    var remRight=[...rightBars];
+    var mergedBars=[];
+
+    while(remLeft.length&&remRight.length){
+      // compare step
+      step(currentGroups.map(function(g){
+        if(g.lo===lo&&g.hi===mid) return{lo:g.lo,hi:g.hi,status:'comparing',bars:[...remLeft]};
+        if(g.lo===mid+1&&g.hi===hi) return{lo:g.lo,hi:g.hi,status:'comparing',bars:[...remRight]};
+        return{lo:g.lo,hi:g.hi,status:g.status,bars:[...g.bars]};
+      }),'Compare '+remLeft[0].val+' (left front) vs '+remRight[0].val+' (right front). '+
+        (remLeft[0].val<=remRight[0].val?remLeft[0].val+' is smaller — take it.':remRight[0].val+' is smaller — take it.'),2);
+
+      var taken;
+      if(remLeft[0].val<=remRight[0].val){taken=remLeft.shift();}
+      else{taken=remRight.shift();}
+      mergedBars.push(taken);
+      currentMerged.push(taken);
+      a[lo+mergedBars.length-1]=taken.val;
+
+      step(currentGroups.map(function(g){
+        if(g.lo===lo&&g.hi===mid) return{lo:g.lo,hi:g.hi,status:'left',bars:[...remLeft]};
+        if(g.lo===mid+1&&g.hi===hi) return{lo:g.lo,hi:g.hi,status:'right',bars:[...remRight]};
+        return{lo:g.lo,hi:g.hi,status:g.status,bars:[...g.bars]};
+      }),'Took '+taken.val+'. Merged so far: ['+mergedBars.map(function(b){return b.val;}).join(',')+'].',3);
+    }
+    while(remLeft.length){
+      var takenL=remLeft.shift();mergedBars.push(takenL);currentMerged.push(takenL);a[lo+mergedBars.length-1]=takenL.val;
+      step(currentGroups.map(function(g){
+        if(g.lo===lo&&g.hi===mid) return{lo:g.lo,hi:g.hi,status:'left',bars:[...remLeft]};
+        if(g.lo===mid+1&&g.hi===hi) return{lo:g.lo,hi:g.hi,status:'right',bars:[]};
+        return{lo:g.lo,hi:g.hi,status:g.status,bars:[...g.bars]};
+      }),'Right done — copied '+takenL.val+' from left. Merged: ['+mergedBars.map(function(b){return b.val;}).join(',')+'].',3);
+    }
+    while(remRight.length){
+      var takenR=remRight.shift();mergedBars.push(takenR);currentMerged.push(takenR);a[lo+mergedBars.length-1]=takenR.val;
+      step(currentGroups.map(function(g){
+        if(g.lo===lo&&g.hi===mid) return{lo:g.lo,hi:g.hi,status:'left',bars:[]};
+        if(g.lo===mid+1&&g.hi===hi) return{lo:g.lo,hi:g.hi,status:'right',bars:[...remRight]};
+        return{lo:g.lo,hi:g.hi,status:g.status,bars:[...g.bars]};
+      }),'Left done — copied '+takenR.val+' from right. Merged: ['+mergedBars.map(function(b){return b.val;}).join(',')+'].',3);
+    }
+
+    // replace both groups with merged sorted group
+    // reassign origIdxs in order lo..hi to keep them stable
+    var sortedBars=mergedBars.map(function(b,i){return{origIdx:lo+i,val:b.val};});
+    var mergedGroups=[],leftDone=false;
+    currentGroups.forEach(function(g){
+      if(g.lo===lo&&g.hi===mid&&!leftDone){
+        mergedGroups.push({lo:lo,hi:hi,status:'sorted',bars:sortedBars});
+        leftDone=true;
+      } else if(g.lo===mid+1&&g.hi===hi&&leftDone){
+        // skip
+      } else {
+        mergedGroups.push({lo:g.lo,hi:g.hi,status:g.status,bars:[...g.bars]});
+      }
+    });
+    currentGroups=mergedGroups;
+    currentMerged=[];
+    step(currentGroups,'Merged! ['+lo+'..'+hi+'] is now sorted: ['+sortedBars.map(function(b){return b.val;}).join(',')+'].',4);
+  }
+
+  mergeSort(0,n-1);
+  var finalBars=Array.from({length:n},function(_,i){return{origIdx:i,val:a[i]};});
+  step([{lo:0,hi:n-1,status:'sorted',bars:finalBars}],'Done! Array fully sorted: ['+a.join(',')+'].',5);
+}
+
+function msDraw(arr,state){
+  const canvasEl=document.getElementById('ms-c');if(!canvasEl)return;
+  if(!state.groups||!state.groups.length)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvasEl.parentElement.clientWidth;
+  const rowH=130,rowPad=24,totalH=rowPad+rowH+90+rowPad;
+  if(canvasEl.width!==Math.round(W*dpr)||canvasEl.height!==Math.round(totalH*dpr)){
+    canvasEl.width=Math.round(W*dpr);canvasEl.height=Math.round(totalH*dpr);
+    canvasEl.style.width=W+'px';canvasEl.style.height=totalH+'px';
+  }
+  const ctx=canvasEl.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,totalH);
+
+  // use original array for consistent max scaling
+  const maxVal=Math.max.apply(null,(arr||[]).concat([1]));
+  const pad=16,bGap=4,groupGap=14;
+
+  var totalBars=0;
+  state.groups.forEach(function(g){totalBars+=g.bars.length;});
+  var numGroups=state.groups.filter(function(g){return g.bars.length>0;}).length;
+  var totalGaps=(numGroups>1?(numGroups-1)*groupGap:0)+(totalBars>numGroups?(totalBars-numGroups)*bGap:0);
+  var bw=totalBars>0?Math.max(12,Math.floor((W-pad*2-totalGaps)/totalBars)):20;
+
+  var xCursor=pad;
+  state.groups.forEach(function(g){
+    if(!g.bars.length)return;
+    var col=msGroupColor(g.status);
+    var groupX=xCursor;
+    g.bars.forEach(function(b){
+      var v=b.val;
+      var bh=Math.max(18,Math.round((v/maxVal)*(rowH-40)));
+      var x=xCursor,y=rowPad+rowH-20-bh;
+      ctx.save();ctx.fillStyle=col;ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(x,y,bw,bh,3);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle=col;ctx.font='500 '+(bw>24?11:9)+'px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),x+bw/2,y-10);
+      ctx.fillStyle='#454340';ctx.font='9px "DM Mono",monospace';
+      ctx.fillText(String(b.origIdx),x+bw/2,rowPad+rowH-6);
+      ctx.restore();
+      xCursor+=bw+bGap;
+    });
+    if(g.bars.length>1){
+      var gw=g.bars.length*(bw+bGap)-bGap;
+      ctx.save();ctx.strokeStyle=col;ctx.globalAlpha=.3;ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(groupX,rowPad+rowH-2);ctx.lineTo(groupX+gw,rowPad+rowH-2);ctx.stroke();
+      ctx.restore();
+    }
+    xCursor+=groupGap;
+  });
+
+  var items=[['sorted','rgba(62,201,160,.85)'],['left half','rgba(79,142,247,.85)'],['right half','rgba(240,96,80,.85)'],['comparing','rgba(240,160,48,.9)'],['merged','rgba(62,201,160,.6)']];
+  var lx=pad;
+  items.forEach(function(item){
+    ctx.save();ctx.fillStyle=item[1];ctx.globalAlpha=.85;
+    ctx.beginPath();ctx.roundRect(lx,4,8,8,2);ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle='#888785';ctx.font='9px "DM Mono",monospace';
+    ctx.textAlign='left';ctx.fillText(item[0],lx+11,9);ctx.restore();
+    lx+=ctx.measureText(item[0]).width+24;
+  });
+
+  // draw merged row if active
+  if(state.mergedBars&&state.mergedBars.length){
+    var mergedY=totalH-rowPad-10;
+    ctx.save();ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='9px "DM Mono",monospace';
+    ctx.textAlign='left';ctx.fillText('merged →',1,mergedY-16);ctx.restore();
+    state.mergedBars.forEach(function(b,mi){
+      var v=b.val;
+      var bh=Math.max(18,Math.round((v/maxVal)*(rowH*0.4)));
+      var x=pad+mi*(bw+bGap);
+      var y=mergedY-bh;
+      ctx.save();ctx.fillStyle='rgba(62,201,160,.8)';ctx.globalAlpha=.85;
+      ctx.beginPath();ctx.roundRect(x,y,bw,bh,2);ctx.fill();ctx.globalAlpha=1;
+      ctx.fillStyle='rgba(62,201,160,.85)';ctx.font='500 '+(bw>24?10:8)+'px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),x+bw/2,y-6);
+      ctx.restore();
+    });
+  }
+}
+
+function msGroupColor(status){
+  if(status==='sorted') return 'rgba(62,201,160,.85)';
+  if(status==='left') return 'rgba(79,142,247,.85)';
+  if(status==='right') return 'rgba(240,96,80,.85)';
+  if(status==='comparing') return 'rgba(240,160,48,.9)';
+  return 'rgba(79,142,247,.55)';
+}
+
+function msBuildPosMap(groups, maxVal, W){
+  const pad=16,bGap=4,groupGap=14;
+  var totalBars=0;
+  groups.forEach(function(g){totalBars+=g.bars.length;});
+  var numGroups=groups.filter(function(g){return g.bars.length>0;}).length;
+  var totalGaps=(numGroups>1?(numGroups-1)*groupGap:0)+(totalBars>numGroups?(totalBars-numGroups)*bGap:0);
+  var bw=totalBars>0?Math.max(12,Math.floor((W-pad*2-totalGaps)/totalBars)):20;
+  var map={};var xCursor=pad;
+  groups.forEach(function(g){
+    if(!g.bars.length)return;
+    var col=msGroupColor(g.status);
+    g.bars.forEach(function(b){
+      // key by origIdx — stable across steps
+      map[b.origIdx]={x:xCursor,bw:bw,col:col,val:b.val};
+      xCursor+=bw+bGap;
+    });
+    xCursor+=groupGap;
+  });
+  return map;
+}
+
+function msAnimate(fromStep,toStep,dur,onDone){
+  if(msAnimReq){cancelAnimationFrame(msAnimReq);msAnimReq=null;}
+  const canvasEl=document.getElementById('ms-c');if(!canvasEl)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvasEl.parentElement.clientWidth;
+  const rowH=130,rowPad=24,totalH=rowPad+rowH+90+rowPad;
+  if(canvasEl.height!==Math.round(totalH*dpr)){
+    canvasEl.width=Math.round(W*dpr);canvasEl.height=Math.round(totalH*dpr);
+    canvasEl.style.width=W+'px';canvasEl.style.height=totalH+'px';
+  }
+  const ctx=canvasEl.getContext('2d');
+
+  // consistent max val from original array
+  var allVals=[];
+  (fromStep.arr||[]).forEach(function(v){allVals.push(v);});
+  (toStep.arr||[]).forEach(function(v){allVals.push(v);});
+  const maxVal=Math.max.apply(null,allVals.concat([1]));
+
+  var fromMap=msBuildPosMap(fromStep.groups||[],maxVal,W);
+  var toMap=msBuildPosMap(toStep.groups||[],maxVal,W);
+
+  // collect all origIdx keys
+  var allIdxs=new Set([...Object.keys(fromMap).map(Number),...Object.keys(toMap).map(Number)]);
+  var startTime=performance.now();
+
+  function frame(now){
+    var t=easeOut(Math.min((now-startTime)/dur,1));
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,totalH);
+
+    allIdxs.forEach(function(origIdx){
+      var fp=fromMap[origIdx],tp=toMap[origIdx];
+      if(!fp&&!tp)return;
+      var src=fp||tp,dst=tp||fp;
+      // bars leaving: fade out while sliding; bars arriving: fade in while sliding
+      var alpha=fp&&tp?0.85:fp&&!tp?lerp(0.85,0,t):lerp(0,0.85,t);
+      if(alpha<0.02)return;
+      var cx=lerp(src.x,dst.x,t);
+      var cbw=lerp(src.bw,dst.bw,t);
+      var col=t>0.5?dst.col:src.col;
+      var v=src.val;
+      var bh=Math.max(18,Math.round((v/maxVal)*(rowH-40)));
+      var y=rowPad+rowH-20-bh;
+      ctx.save();ctx.fillStyle=col;ctx.globalAlpha=alpha;
+      ctx.beginPath();ctx.roundRect(cx,y,cbw,bh,3);ctx.fill();
+      ctx.globalAlpha=alpha;
+      ctx.fillStyle=col;ctx.font='500 '+(cbw>24?11:9)+'px "DM Mono",monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(String(v),cx+cbw/2,y-10);
+      ctx.restore();
+    });
+
+    if(t<1)msAnimReq=requestAnimationFrame(frame);
+    else{msAnimReq=null;if(onDone)onDone();}
+  }
+  msAnimReq=requestAnimationFrame(frame);
+}
+
+function msApplyStep(idx,onDone){
+  if(idx<0||idx>=msSteps.length)return;
+  const prev=msSteps[msStepIdx]||msSteps[0];
+  msStepIdx=idx;
+  const step=msSteps[idx];
+
+  setLog('ms-log','['+(idx+1)+'/'+msSteps.length+'] '+step.msg,true);
+  msHighlightPseudo(step.pseudoLine);
+  document.getElementById('ms-prev').disabled=idx===0;
+  document.getElementById('ms-next').disabled=idx===msSteps.length-1;
+  updateDots('ms-dots',msSteps.length,idx);
+
+  // animate if group layout changed
+  const groupsChanged=JSON.stringify((prev.groups||[]).map(function(g){return g.lo+'-'+g.hi+'-'+g.bars.length;}))!==
+                       JSON.stringify((step.groups||[]).map(function(g){return g.lo+'-'+g.hi+'-'+g.bars.length;}));
+  if(groupsChanged&&prev.groups&&step.groups){
+    const animDur=msSpeed>400?450:msSpeed>150?280:100;
+    msAnimate(prev,step,animDur,function(){
+      msDraw(step.arr,step);
+      if(onDone) onDone();
+    });
+  } else {
+    if(msAnimReq){cancelAnimationFrame(msAnimReq);msAnimReq=null;}
+    msDraw(step.arr,step);
+    if(onDone) onDone();
+  }
+}
+
+function msHighlightPseudo(line){
+  document.querySelectorAll('#ms-pseudo .line').forEach((el,i)=>el.classList.toggle('hi',i===line));
+}
+function msStep(dir){
+  if(msAutoRunning){msAutoRunning=false;document.getElementById('ms-auto').textContent='Auto ▶';}
+  msApplyStep(msStepIdx+dir);
+}
+function msAuto(){
+  if(msAutoRunning){msAutoRunning=false;document.getElementById('ms-auto').textContent='Auto ▶';return;}
+  msAutoRunning=true;document.getElementById('ms-auto').textContent='Stop ■';
+  function tick(){
+    if(!msAutoRunning||msStepIdx>=msSteps.length-1){msAutoRunning=false;document.getElementById('ms-auto').textContent='Auto ▶';return;}
+    const step=msSteps[msStepIdx+1];
+    const prev=msSteps[msStepIdx];
+    const groupsChanged=JSON.stringify((prev.groups||[]).map(function(g){return g.lo+'-'+g.hi+'-'+g.bars.length;}))!==
+                         JSON.stringify((step.groups||[]).map(function(g){return g.lo+'-'+g.hi+'-'+g.bars.length;}));
+    const animDur=groupsChanged?(msSpeed>400?450:msSpeed>150?280:100):0;
+    const pause=Math.max(30,msSpeed-animDur);
+    msApplyStep(msStepIdx+1,function(){setTimeout(tick,pause);});
+  }
+  tick();
+}
+function msReset(){msAutoRunning=false;document.getElementById('ms-auto').textContent='Auto ▶';msStepIdx=0;msApplyStep(0);}
+function msSetSpeedRange(val){
+  const t=val/100;
+  msSpeed=Math.round(Math.pow(10,lerp(Math.log10(1000),Math.log10(20),t)));
+  const lbl=document.getElementById('ms-speed-lbl');
+  if(lbl) lbl.textContent=t>0.8?'turbo':t>0.5?'fast':t>0.25?'medium':'slow';
+}
+
+SECTIONS.push(
+  {id:'merge',icon:'🔀',label:'Merge Sort',
+   badge:'O(N log N) all cases · not in-place · stable',
+   desc:'Split the array in half, recursively sort each half, then merge the two sorted halves back together. Guaranteed O(N log N) in all cases — no bad pivots.',
+   controls:`
+     <span class="clbl">size</span>
+     <input class="ci" id="ms-size" value="8" type="number" min="4" max="16">
+     <button class="cb p" onclick="msGenerate()">New array</button>
+     <div class="csep"></div>
+     <button class="cb" id="ms-prev" onclick="msStep(-1)" disabled>← Prev</button>
+     <button class="cb" id="ms-next" onclick="msStep(1)">Next →</button>
+     <button class="cb go" id="ms-auto" onclick="msAuto()">Auto ▶</button>
+     <button class="cb" onclick="msReset()">Reset</button>
+     <div class="csep"></div>
+     <span class="clbl">speed</span>
+     <div style="display:flex;align-items:center;gap:8px">
+       <span style="font-size:11px">🐢</span>
+       <input type="range" id="ms-speed-range" min="1" max="100" value="75"
+         style="width:110px;accent-color:var(--teal);cursor:pointer"
+         oninput="msSetSpeedRange(this.value)">
+       <span style="font-size:11px">🚀</span>
+       <span id="ms-speed-lbl" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);min-width:32px">fast</span>
+     </div>
+     <div style="margin-left:auto;display:flex;gap:4px" id="ms-dots"></div>`,
+   canvas:'ms-c',ch:220,
+   extra:`
+     <div id="ms-pseudo" class="pseudo">
+       <span class="line"><span class="kw">mergeSort</span>(arr, lo, hi):  <span class="cmt">// split in half</span></span>
+       <span class="line">&nbsp;&nbsp;mid = lo + (hi - lo) / 2  <span class="cmt">// find midpoint</span></span>
+       <span class="line">&nbsp;&nbsp;<span class="kw">while</span> comparing left[i] and right[j]:  <span class="cmt">// pick smaller</span></span>
+       <span class="line">&nbsp;&nbsp;&nbsp;&nbsp;place smaller into merged array  <span class="cmt">// build sorted result</span></span>
+       <span class="line">&nbsp;&nbsp;<span class="cmt">// merge complete — section is sorted</span></span>
+       <span class="line"><span class="cmt">// done</span></span>
+     </div>
+     <table class="complexity-table" style="margin-top:14px">
+       <thead><tr><th>Case</th><th>Time</th><th>Why</th></tr></thead>
+       <tbody>
+         <tr><td>Best</td><td class="good">O(N log N)</td><td style="color:var(--text2)">Always splits in half — log N levels, N comparisons per level</td></tr>
+         <tr><td>Worst</td><td class="good">O(N log N)</td><td style="color:var(--text2)">Same structure regardless of input — no bad cases</td></tr>
+         <tr><td>Average</td><td class="good">O(N log N)</td><td style="color:var(--text2)">Always log N levels × N work = N log N</td></tr>
+         <tr><td>Space</td><td class="bad">O(N)</td><td style="color:var(--text2)">Needs a temporary array to hold merged results</td></tr>
+       </tbody>
+     </table>
+     <div style="margin-top:16px">
+       <div style="font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">Key facts</div>
+       <div style="display:flex;flex-direction:column;gap:8px">
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">How it works</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">split → sort each half → merge</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Merge sort keeps splitting the array in half until every piece is size 1 (already sorted). Then it merges pairs of sorted pieces back together. Two sorted lists are easy to merge — just always pick the smaller of the two front elements.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Why always O(N log N)?</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">log₂(N) levels × N comparisons per level</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Unlike quick sort, merge sort always splits exactly in half — so there are always log₂(N) levels. At each level, every element is touched exactly once during merging. N elements × log₂(N) levels = O(N log N) no matter what the input looks like.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Stable</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Equal elements keep their original relative order. When merging, if left[i] = right[j], left[i] is always picked first — so equal elements from the left half always come before equal elements from the right half.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#ff9a90;margin-bottom:5px">Space cost — O(N)</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Merge sort can't merge in-place — it needs a temporary array to build the merged result. This costs O(N) extra memory, which is the main downside compared to quick sort (O(log N) space).</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#c4adff;margin-bottom:5px">Best used for</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">
+             <strong style="color:var(--text)">When stability matters</strong> — preserves relative order of equal elements.<br><br>
+             <strong style="color:var(--text)">Guaranteed performance</strong> — no worst case like quick sort's O(N²).<br><br>
+             <strong style="color:var(--text)">Linked lists</strong> — merge sort works well on linked lists since merging doesn't require random access.
+           </div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Scaling rule — O(N log N)</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">(kN) log(kN) / N log N ≈ k (for large N)</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Double the elements → roughly double the time. Same as quick sort's average case. Much better than O(N²) algorithms.</div>
+         </div>
+       </div>
+     </div>`,
+   log:'ms-log',logDef:'Generate an array and step through the sort.',
+   callout:'<strong>Key idea:</strong> merge sort never has a bad case because it always splits exactly in half. The downside is it needs O(N) extra memory to hold merged results — unlike quick sort which sorts in-place.',
+   init:()=>msGenerate()}
+);
+
+
+/* ══════════════════════════════════════════
+   BUBBLE SORT
+══════════════════════════════════════════ */
+let bsData=[], bsSteps=[], bsStepIdx=0, bsSpeed=600, bsAutoRunning=false;
+const BS_COLORS={
+  default:'rgba(79,142,247,.7)',
+  sorted:'rgba(62,201,160,.7)',
+  comparing:'rgba(240,160,48,.9)',
+  swapping:'rgba(159,126,247,.9)',
+};
+
+function bsGenerate(){
+  if(bsAutoRunning){bsAutoRunning=false;document.getElementById('bs-auto').textContent='Auto \u25B6';}
+  const n=parseInt(document.getElementById('bs-size').value)||8;
+  bsData=Array.from({length:Math.min(Math.max(n,4),16)},()=>Math.floor(Math.random()*90)+10);
+  bsSteps=[];bsStepIdx=0;
+  bsBuildSteps([...bsData]);
+  mkC('bs-c',220);
+  drawBarsAnimated('bs-c',bsData,bsData,{sorted:[],comparing:[],swapping:[]},{sorted:[],comparing:[],swapping:[]},BS_COLORS,1);
+  setLog('bs-log','Array generated. N='+bsData.length+'. Bubble sort compares adjacent pairs and swaps if out of order.');
+  document.getElementById('bs-prev').disabled=true;
+  document.getElementById('bs-next').disabled=false;
+  updateDots('bs-dots',bsSteps.length,0);
+  bsHighlightPseudo(-1);
+}
+
+function bsBuildSteps(arr){
+  const a=[...arr];
+  const n=a.length;
+  const sorted=[];
+  bsSteps.push({arr:[...a],sorted:[],comparing:[],swapping:[],
+    msg:'Starting bubble sort. Each pass compares neighboring elements and swaps them if out of order. The largest unsorted element bubbles to the end each pass.',
+    pseudoLine:-1});
+  for(let i=0;i<n-1;i++){
+    let swappedAny=false;
+    for(let j=0;j<n-1-i;j++){
+      bsSteps.push({arr:[...a],sorted:[...sorted],comparing:[j,j+1],swapping:[],
+        msg:'Pass '+(i+1)+': compare arr['+j+']='+a[j]+' and arr['+(j+1)+']='+a[j+1]+'. '+
+          (a[j]>a[j+1]?a[j]+' > '+a[j+1]+' \u2014 out of order, swap.':a[j]+' \u2264 '+a[j+1]+' \u2014 already in order, move on.'),
+        pseudoLine:1});
+      if(a[j]>a[j+1]){
+        swappedAny=true;
+        bsSteps.push({arr:[...a],sorted:[...sorted],comparing:[],swapping:[j,j+1],
+          msg:'Swapping '+a[j]+' and '+a[j+1]+'.',pseudoLine:2});
+        [a[j],a[j+1]]=[a[j+1],a[j]];
+        bsSteps.push({arr:[...a],sorted:[...sorted],comparing:[],swapping:[],
+          msg:'Swapped. arr['+j+']='+a[j]+' and arr['+(j+1)+']='+a[j+1]+' are now in order.',pseudoLine:2});
+      }
+    }
+    sorted.unshift(n-1-i);
+    bsSteps.push({arr:[...a],sorted:[...sorted],comparing:[],swapping:[],
+      msg:'End of pass '+(i+1)+'. '+a[n-1-i]+' has bubbled to its final position at index '+(n-1-i)+'.',
+      pseudoLine:3});
+    if(!swappedAny){
+      bsSteps.push({arr:[...a],sorted:Array.from({length:n},(_,k)=>k),comparing:[],swapping:[],
+        msg:'No swaps this pass \u2014 array is already sorted! Done early.',pseudoLine:4});
+      return;
+    }
+  }
+  bsSteps.push({arr:[...a],sorted:Array.from({length:n},(_,k)=>k),comparing:[],swapping:[],
+    msg:'Done! Array fully sorted.',pseudoLine:4});
+}
+
+let bsAnimReq=null;
+function bsApplyStep(idx){
+  if(idx<0||idx>=bsSteps.length)return;
+  const prev=bsSteps[bsStepIdx]||bsSteps[0];
+  bsStepIdx=idx;
+  const step=bsSteps[idx];
+  const animDur=bsSpeed>400?320:bsSpeed>150?200:80;
+  drawBarsAnimated('bs-c',prev.arr,step.arr,prev,step,BS_COLORS,animDur);
+  setLog('bs-log','['+(idx+1)+'/'+bsSteps.length+'] '+step.msg,true);
+  bsHighlightPseudo(step.pseudoLine);
+  document.getElementById('bs-prev').disabled=idx===0;
+  document.getElementById('bs-next').disabled=idx===bsSteps.length-1;
+  updateDots('bs-dots',bsSteps.length,idx);
+}
+function bsHighlightPseudo(line){
+  document.querySelectorAll('#bs-pseudo .line').forEach((el,i)=>el.classList.toggle('hi',i===line));
+}
+function bsStep(dir){
+  if(bsAutoRunning){bsAutoRunning=false;document.getElementById('bs-auto').textContent='Auto \u25B6';}
+  bsApplyStep(bsStepIdx+dir);
+}
+function bsAuto(){
+  if(bsAutoRunning){bsAutoRunning=false;document.getElementById('bs-auto').textContent='Auto \u25B6';return;}
+  bsAutoRunning=true;document.getElementById('bs-auto').textContent='Stop \u25A0';
+  function tick(){
+    if(!bsAutoRunning||bsStepIdx>=bsSteps.length-1){bsAutoRunning=false;document.getElementById('bs-auto').textContent='Auto \u25B6';return;}
+    bsApplyStep(bsStepIdx+1);setTimeout(tick,bsSpeed);
+  }
+  tick();
+}
+function bsReset(){bsAutoRunning=false;document.getElementById('bs-auto').textContent='Auto \u25B6';bsStepIdx=0;bsApplyStep(0);}
+function bsSetSpeedRange(val){
+  const t=val/100;
+  bsSpeed=Math.round(Math.pow(10,lerp(Math.log10(1000),Math.log10(20),t)));
+  const lbl=document.getElementById('bs-speed-lbl');
+  if(lbl) lbl.textContent=t>0.8?'turbo':t>0.5?'fast':t>0.25?'medium':'slow';
+}
+
+SECTIONS.push(
+  {id:'bubble',icon:'🫧',label:'Bubble Sort',
+   badge:'O(N²) worst · O(N) best · in-place · stable',
+   desc:'Compare adjacent pairs and swap if out of order. Each pass bubbles the largest unsorted element to its final position. Simple but slow — mainly used for teaching.',
+   controls:`
+     <span class="clbl">size</span>
+     <input class="ci" id="bs-size" value="8" type="number" min="4" max="16">
+     <button class="cb p" onclick="bsGenerate()">New array</button>
+     <div class="csep"></div>
+     <button class="cb" id="bs-prev" onclick="bsStep(-1)" disabled>← Prev</button>
+     <button class="cb" id="bs-next" onclick="bsStep(1)">Next →</button>
+     <button class="cb go" id="bs-auto" onclick="bsAuto()">Auto ▶</button>
+     <button class="cb" onclick="bsReset()">Reset</button>
+     <div class="csep"></div>
+     <span class="clbl">speed</span>
+     <div style="display:flex;align-items:center;gap:8px">
+       <span style="font-size:11px">🐢</span>
+       <input type="range" id="bs-speed-range" min="1" max="100" value="75"
+         style="width:110px;accent-color:var(--teal);cursor:pointer"
+         oninput="bsSetSpeedRange(this.value)">
+       <span style="font-size:11px">🚀</span>
+       <span id="bs-speed-lbl" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);min-width:32px">fast</span>
+     </div>
+     <div style="margin-left:auto;display:flex;gap:4px" id="bs-dots"></div>`,
+   canvas:'bs-c',ch:220,
+   extra:`
+     <div id="bs-pseudo" class="pseudo">
+       <span class="line"><span class="kw">for</span> i = 0 <span class="kw">to</span> N−2:  <span class="cmt">// N−1 passes max</span></span>
+       <span class="line">&nbsp;&nbsp;<span class="kw">for</span> j = 0 <span class="kw">to</span> N−2−i:  <span class="cmt">// shrinks each pass</span></span>
+       <span class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> arr[j] &gt; arr[j+1]: <span class="fn">swap</span>(arr[j], arr[j+1])  <span class="cmt">// out of order</span></span>
+       <span class="line">&nbsp;&nbsp;<span class="cmt">// arr[N−1−i] is now in its final sorted position</span></span>
+       <span class="line"><span class="cmt">// done (or exit early if no swaps this pass)</span></span>
+     </div>
+     <table class="complexity-table" style="margin-top:14px">
+       <thead><tr><th>Case</th><th>Time</th><th>Why</th></tr></thead>
+       <tbody>
+         <tr><td>Best</td><td class="good">O(N)</td><td style="color:var(--text2)">Already sorted — one pass confirms no swaps needed, exit early</td></tr>
+         <tr><td>Worst</td><td class="bad">O(N²)</td><td style="color:var(--text2)">Reverse sorted — maximum swaps every pass</td></tr>
+         <tr><td>Average</td><td class="bad">O(N²)</td><td style="color:var(--text2)">About N²/2 comparisons on random data</td></tr>
+         <tr><td>Space</td><td class="good">O(1)</td><td style="color:var(--text2)">Sorts in place, only needs one temp variable</td></tr>
+       </tbody>
+     </table>
+     <div style="margin-top:16px">
+       <div style="font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px">Key facts</div>
+       <div style="display:flex;flex-direction:column;gap:8px">
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">How it works</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">compare neighbors → swap if wrong order → repeat</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Walk through the array comparing arr[j] and arr[j+1]. If they’re out of order, swap. After each full pass, the largest unsorted element has bubbled all the way to the right into its final position — just like a bubble floating to the surface.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Why the inner loop shrinks each pass</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">last i elements already sorted after pass i</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">After pass 1, the largest is at index N−1 — no need to check it again. After pass 2, the two largest are sorted. The inner loop shrinks by 1 each pass, saving unnecessary comparisons.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#a8c8ff;margin-bottom:5px">Early exit</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">no swaps in a pass → already sorted → stop</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">If a full pass completes with zero swaps, the array is already sorted. Stop early. This gives bubble sort O(N) best case on already-sorted input.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#7de8c8;margin-bottom:5px">Stable</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Only swaps when arr[j] &gt; arr[j+1] — equal elements never swap, so their relative order is always preserved.</div>
+         </div>
+         <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 14px">
+           <div style="font-family:var(--font-mono);font-size:11px;color:#c4adff;margin-bottom:5px">Scaling rule — O(N²)</div>
+           <div style="font-family:var(--font-mono);font-size:13px;color:#ffc860;margin-bottom:6px">(kN)² / N² = k²</div>
+           <div style="font-size:13px;color:var(--text2);line-height:1.6">Double the elements → 4× slower. Same scaling as selection and insertion sort worst case.</div>
+         </div>
+       </div>
+     </div>`,
+   log:'bs-log',logDef:'Generate an array and step through the sort.',
+   callout:'<strong>Key idea:</strong> each pass guarantees the largest unsorted element lands at the end. The inner loop shrinks each pass because those end elements are already done. If a whole pass has no swaps, stop early — the array is sorted.',
+   init:()=>bsGenerate()}
+);
+
+let current=SECTIONS[0].id;
+function switchTo(id){
+  current=id;
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.id===id));
+  document.querySelectorAll('.panel').forEach(el=>el.classList.toggle('active',el.id==='p-'+id));
+  const s=SECTIONS.find(x=>x.id===id);
+  if(s)setTimeout(()=>{s.init();setLog(s.log,s.logDef);},30);
+}
+
+const navEl=document.getElementById('nav');
+const panelsEl=document.getElementById('panels');
+SECTIONS.forEach(s=>{
+  const ni=document.createElement('div');
+  ni.className='nav-item'+(s.id===current?' active':'');
+  ni.dataset.id=s.id;
+  ni.innerHTML=`<span style="font-size:16px;width:22px;text-align:center">${s.icon}</span>${s.label}`;
+  ni.onclick=()=>switchTo(s.id);
+  navEl.appendChild(ni);
+
+  const p=document.createElement('div');
+  p.className='panel'+(s.id===current?' active':'');
+  p.id='p-'+s.id;
+  p.innerHTML=`
+    <div class="ph">
+      <div class="ph-row"><span style="font-size:26px">${s.icon}</span><h2 class="ph-title">${s.label}</h2><span class="ph-badge">${s.badge}</span></div>
+      <p class="ph-desc">${s.desc}</p>
+    </div>
+    <div class="ctrls">${s.controls}</div>
+    <div class="scene"><canvas id="${s.canvas}"></canvas></div>
+    <div class="log" id="${s.log}">${s.logDef}</div>
+    ${s.extra||''}
+    <div class="callout">${s.callout}</div>`;
+
+  panelsEl.appendChild(p);
+});
+
+window.addEventListener('load',()=>{
+  const s=SECTIONS.find(x=>x.id===current);
+  if(s){s.init();setLog(s.log,s.logDef);}
+});
+window.addEventListener('resize',()=>{
+  const s=SECTIONS.find(x=>x.id===current);if(s)s.init();
+});
+</script></body>
+</html>
